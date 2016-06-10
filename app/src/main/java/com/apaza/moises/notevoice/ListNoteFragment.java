@@ -2,9 +2,11 @@ package com.apaza.moises.notevoice;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -15,11 +17,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class ListNoteFragment extends Fragment implements View.OnClickListener{
@@ -46,6 +52,11 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
     private ListView list;
     private ListNoteAdapter adapter;
+
+    private PinnedSectionListView listNote;
+    private SimpleAdapter noteAdapter;
+    public int sectionPosition;
+    public int listPosition;
 
     public ListNoteFragment() {
         // Required empty public constructor
@@ -95,6 +106,13 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         list = (ListView)view.findViewById(R.id.listNoteVoice);
         adapter = new ListNoteAdapter(getActivity(), Note.getListTest());
         list.setAdapter(adapter);
+
+        listNote = (PinnedSectionListView)view.findViewById(R.id.listNote);
+        clearAdapter();
+        initializeAdapter();
+        generateListTest(5,"Android");
+        generateListTest(10,"Moises");
+        generateListTest(7,"Apaza");
     }
 
     @Override
@@ -194,16 +212,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
-    public class ListNoteAdapter extends ArrayAdapter<Note> {
+    public class ListNoteAdapter extends ArrayAdapter<Note>{
 
         public ListNoteAdapter(Context context, List<Note> list) {
             super(context, R.layout.item_note_audio, list);
-        }
-
-        public class ViewHolder{
-            ImageButton play, stop;
-            SeekBar seekBarAudio;
-            TextView message;
         }
 
         @Override
@@ -247,7 +259,177 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
             holder.message.setText(note.getIdNote() + " - " + note.getMessage());
             return view;
         }
+    }
 
+    public class ViewHolder{
+        LinearLayout viewItem;
+        ImageButton play, stop;
+        SeekBar seekBarAudio;
+        TextView message;
+        TextView titleSection;
+    }
+
+    private void initializeAdapter() {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            listNote.setFastScrollAlwaysVisible(true);
+        }*/
+        noteAdapter = new SimpleAdapter(getActivity());
+        listNote.setAdapter(noteAdapter);
+    }
+
+    public void clearAdapter(){
+        if(noteAdapter != null) noteAdapter.clear();
+        sectionPosition = 0;
+        listPosition = 0;
+    }
+
+    public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionListView.PinnedSectionListAdapter {
+
+        private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
+
+        public SimpleAdapter(Context context) {
+            super(context, R.layout.item_note_audio);
+        }
+
+        protected void prepareSections(int sectionsNumber) { }
+
+        protected void onSectionAdded(Item section, int sectionPosition) { }
+
+        @Override public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            final ViewHolder holder;
+            if(view == null){
+                view = getActivity().getLayoutInflater().inflate(R.layout.item_note_audio, null);
+                holder = new ViewHolder();
+                holder.viewItem = (LinearLayout)view.findViewById(R.id.viewItem);
+                holder.play = (ImageButton)view.findViewById(R.id.play);
+                holder.stop = (ImageButton)view.findViewById(R.id.stop);
+                holder.seekBarAudio = (SeekBar)view.findViewById(R.id.seekBarAudio);
+                holder.message = (TextView)view.findViewById(R.id.message);
+                holder.titleSection = (TextView)view.findViewById(R.id.titleSection);
+                view.setTag(holder);
+            }else{
+                holder = (ViewHolder)view.getTag();
+            }
+            final Item item = getItem(position);
+            if(item.type == Item.SECTION){
+                holder.titleSection.setVisibility(View.VISIBLE);
+                holder.viewItem.setVisibility(View.GONE);
+                holder.titleSection.setText(item.title);
+                view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
+            }else{
+                final Note note = item.note;
+                holder.viewItem.setVisibility(View.VISIBLE);
+                holder.titleSection.setVisibility(View.GONE);
+                holder.play.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startAudio(note.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                stopAudio();
+                            }
+                        });
+                    }
+                });
+                holder.stop.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+                holder.message.setText(note.getIdNote() + " - " + note.getMessage());
+            }
+
+            return view;
+        }
+
+        @Override public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override public int getItemViewType(int position) {
+            return getItem(position).type;
+        }
+
+        @Override
+        public boolean isItemViewTypePinned(int viewType) {
+            return viewType == Item.SECTION;
+        }
+
+    }
+
+    public class FastScrollAdapter extends SimpleAdapter implements SectionIndexer {
+
+        private Item[] sections;
+
+        public FastScrollAdapter(Context context) {
+            super(context);
+        }
+
+        @Override protected void prepareSections(int sectionsNumber) {
+            sections = new Item[sectionsNumber];
+        }
+
+        @Override protected void onSectionAdded(Item section, int sectionPosition) {
+            sections[sectionPosition] = section;
+        }
+
+        @Override public Item[] getSections() {
+            return sections;
+        }
+
+        @Override public int getPositionForSection(int section) {
+            if (section >= sections.length) {
+                section = sections.length - 1;
+            }
+            return sections[section].listPosition;
+        }
+
+        @Override public int getSectionForPosition(int position) {
+            if (position >= getCount()) {
+                position = getCount() - 1;
+            }
+            return getItem(position).sectionPosition;
+        }
+    }
+
+    public void generateListTest(int countItem, String titleHeader){
+        Item section = new Item(Item.SECTION, titleHeader);
+        section.sectionPosition = sectionPosition;
+        section.listPosition = listPosition++;
+        noteAdapter.onSectionAdded(section, sectionPosition);
+        noteAdapter.add(section);
+        for(int i = 1; i <= countItem; i++){
+            Item item = new Item(Item.NOTE, new Note("00" + i, "Message test 00" + i, R.raw.dejala_hablar));
+            item.sectionPosition = sectionPosition;
+            item.listPosition = listPosition++;
+
+            noteAdapter.add(item);
+        }
+        sectionPosition++;
+    }
+
+    public static class Item{
+        public static final int SECTION = 0;
+        public static final int NOTE = 1;
+
+        public int sectionPosition;
+        public int listPosition;
+
+        public final int type;
+        public String title;
+        public Note note;
+
+        public Item(int type, String titleSection){
+            this.type = type;
+            this.title = titleSection;
+        }
+
+        public Item(int type, Note note){
+            this.type = type;
+            this.note = note;
+        }
     }
 
 }

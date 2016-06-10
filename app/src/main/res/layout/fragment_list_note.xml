@@ -46,6 +46,16 @@
         android:id="@+id/listNoteVoice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <com.apaza.moises.notevoice.PinnedSectionListView
+        android:id="@+id/listNote"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:headerDividersEnabled="false"
+        android:footerDividersEnabled="false"
+        android:scrollbars="none"
+        android:background="@android:color/darker_gray"/>
 
 </LinearLayout>
