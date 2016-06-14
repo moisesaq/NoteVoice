@@ -5,12 +5,31 @@
     android:orientation="vertical"
     tools:context="com.apaza.moises.notevoice.ListNoteFragment">
 
-    <ImageButton
-        android:id="@+id/recorder"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_microphone_settings_white_24dp"
-        android:layout_gravity="right|top" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/textNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/recorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_microphone_settings_white_24dp"
+            android:layout_gravity="right|top" />
+
+    </LinearLayout>
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText" />
 
     <LinearLayout
         android:orientation="horizontal"

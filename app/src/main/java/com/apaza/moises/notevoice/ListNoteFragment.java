@@ -2,38 +2,41 @@ package com.apaza.moises.notevoice;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.apaza.moises.notevoice.database.Note;
+import com.apaza.moises.notevoice.database.NoteDao;
 
+import java.util.Date;
 import java.util.List;
 
 public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
+    private NoteDao noteDao;
+
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
 
+    private EditText textNote;
     private ImageButton recorder;
+
     private SeekBar seekBar;
     private int startTime = 0;
     private int finalTime = 0;
@@ -43,10 +46,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
     private View view;
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -62,11 +63,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         // Required empty public constructor
     }
 
-    public static ListNoteFragment newInstance(String param1, String param2) {
+    public static ListNoteFragment newInstance(String param1) {
         ListNoteFragment fragment = new ListNoteFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,7 +76,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
     }
@@ -89,13 +88,9 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
     }
 
     private void setupView(){
+        textNote = (EditText)view.findViewById(R.id.textNote);
         recorder = (ImageButton)view.findViewById(R.id.recorder);
-        recorder.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
+        recorder.setOnClickListener(this);
 
         Button play = (Button) view.findViewById(R.id.play);
         play.setOnClickListener(this);
@@ -104,7 +99,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         seekBar = (SeekBar)view.findViewById(R.id.seekBar);
 
         list = (ListView)view.findViewById(R.id.listNoteVoice);
-        adapter = new ListNoteAdapter(getActivity(), Note.getListTest());
+        adapter = new ListNoteAdapter(getActivity(), NoteTest.getListTest());
         list.setAdapter(adapter);
 
         listNote = (PinnedSectionListView)view.findViewById(R.id.listNote);
@@ -129,7 +124,26 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
             case R.id.stop:
                 stopAudio();
                 break;
+            case R.id.recorder:
+                saveNote();
+                break;
         }
+    }
+
+    private void saveNote(){
+        noteDao = Global.getHandlerDB().getDaoSession().getNoteDao();
+        if(noteDao.insert(getNoteOfView()) > 0)
+            showMessage("Note recorded");
+    }
+
+    private Note getNoteOfView(){
+        Note note = new Note();
+        note.setCode(Global.generateCodeUnique("note"));
+        note.setText(textNote.getText().toString());
+        note.setPathAudio(String.valueOf(R.raw.dejala_hablar));
+        note.setColor(String.valueOf(Global.colorGenerator.getRandomColor()));
+        note.setDateCreated(new Date().toString());
+        return note;
     }
 
     private Runnable UpdateSeekBar = new Runnable() {
@@ -212,14 +226,14 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         Snackbar.make(getActivity().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
     }
 
-    public class ListNoteAdapter extends ArrayAdapter<Note>{
+    public class ListNoteAdapter extends ArrayAdapter<NoteTest>{
 
-        public ListNoteAdapter(Context context, List<Note> list) {
+        public ListNoteAdapter(Context context, List<NoteTest> list) {
             super(context, R.layout.item_note_audio, list);
         }
 
         @Override
-        public Note getItem(int position) {
+        public NoteTest getItem(int position) {
             return super.getItem(position);
         }
 
@@ -238,11 +252,11 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
             }else{
                 holder = (ViewHolder)view.getTag();
             }
-            final Note note = getItem(position);
+            final NoteTest noteTest = getItem(position);
             holder.play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startAudio(note.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
+                    startAudio(noteTest.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             stopAudio();
@@ -256,7 +270,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
                 }
             });
-            holder.message.setText(note.getIdNote() + " - " + note.getMessage());
+            holder.message.setText(noteTest.getIdNote() + " - " + noteTest.getMessage());
             return view;
         }
     }
@@ -318,13 +332,13 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
                 holder.titleSection.setText(item.title);
                 view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
             }else{
-                final Note note = item.note;
+                final NoteTest noteTest = item.noteTest;
                 holder.viewItem.setVisibility(View.VISIBLE);
                 holder.titleSection.setVisibility(View.GONE);
                 holder.play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startAudio(note.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
+                        startAudio(noteTest.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 stopAudio();
@@ -338,7 +352,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
                     }
                 });
-                holder.message.setText(note.getIdNote() + " - " + note.getMessage());
+                holder.message.setText(noteTest.getIdNote() + " - " + noteTest.getMessage());
             }
 
             return view;
@@ -401,7 +415,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         noteAdapter.onSectionAdded(section, sectionPosition);
         noteAdapter.add(section);
         for(int i = 1; i <= countItem; i++){
-            Item item = new Item(Item.NOTE, new Note("00" + i, "Message test 00" + i, R.raw.dejala_hablar));
+            Item item = new Item(Item.NOTE, new NoteTest("00" + i, "Message test 00" + i, R.raw.dejala_hablar));
             item.sectionPosition = sectionPosition;
             item.listPosition = listPosition++;
 
@@ -419,16 +433,16 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
         public final int type;
         public String title;
-        public Note note;
+        public NoteTest noteTest;
 
         public Item(int type, String titleSection){
             this.type = type;
             this.title = titleSection;
         }
 
-        public Item(int type, Note note){
+        public Item(int type, NoteTest noteTest){
             this.type = type;
-            this.note = note;
+            this.noteTest = noteTest;
         }
     }
 
