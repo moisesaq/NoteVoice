@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        showFragment(ListNoteFragment.newInstance("", ""));
+        showFragment(ListNoteFragment.newInstance(""));
 
     }
 

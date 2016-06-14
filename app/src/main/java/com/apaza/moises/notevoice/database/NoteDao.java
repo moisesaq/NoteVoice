@@ -19,7 +19,7 @@ public class NoteDao extends AbstractDao<Note, Long> {
     public static final String TABLENAME = "NOTE";
 
     /**
-     * Properties of entity NoteTest.<br/>
+     * Properties of entity Note.<br/>
      * Can be used for QueryBuilder and for referencing column names.
     */
     public static class Properties {

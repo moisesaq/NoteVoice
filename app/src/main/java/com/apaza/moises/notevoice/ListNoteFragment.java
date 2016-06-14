@@ -332,13 +332,13 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
                 holder.titleSection.setText(item.title);
                 view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
             }else{
-                final NoteTest noteTest = item.noteTest;
+                final Note note = item.note;
                 holder.viewItem.setVisibility(View.VISIBLE);
                 holder.titleSection.setVisibility(View.GONE);
                 holder.play.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startAudio(noteTest.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
+                        startAudio(Integer.valueOf(note.getPathAudio()), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 stopAudio();
@@ -352,7 +352,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
                     }
                 });
-                holder.message.setText(noteTest.getIdNote() + " - " + noteTest.getMessage());
+                holder.message.setText(note.getText());
             }
 
             return view;
@@ -415,12 +415,28 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         noteAdapter.onSectionAdded(section, sectionPosition);
         noteAdapter.add(section);
         for(int i = 1; i <= countItem; i++){
-            Item item = new Item(Item.NOTE, new NoteTest("00" + i, "Message test 00" + i, R.raw.dejala_hablar));
+            Item item = new Item(Item.NOTE, new Note());
             item.sectionPosition = sectionPosition;
             item.listPosition = listPosition++;
 
             noteAdapter.add(item);
         }
+        sectionPosition++;
+    }
+
+    private void addNoteToAdapter(Note note){
+
+        Item section = new Item(Item.SECTION, "Test");
+        section.sectionPosition = sectionPosition;
+        section.listPosition = listPosition++;
+        noteAdapter.onSectionAdded(section, sectionPosition);
+        noteAdapter.add(section);
+
+        Item item = new Item(Item.NOTE, note);
+        item.sectionPosition = sectionPosition;
+        item.listPosition = listPosition++;
+        noteAdapter.add(item);
+        
         sectionPosition++;
     }
 
@@ -433,16 +449,16 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
 
         public final int type;
         public String title;
-        public NoteTest noteTest;
+        public Note note;
 
         public Item(int type, String titleSection){
             this.type = type;
             this.title = titleSection;
         }
 
-        public Item(int type, NoteTest noteTest){
+        public Item(int type, Note note){
             this.type = type;
-            this.noteTest = noteTest;
+            this.note = note;
         }
     }
 
