@@ -8,49 +8,71 @@
         android:id="@+id/viewItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_gravity="center">
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageButton
-                android:id="@+id/play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_play_box_outline_white_24dp"/>
-
-            <ImageButton
-                android:id="@+id/stop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_stop_circle_outline_white_24dp"
-                android:visibility="gone"/>
-
-        </FrameLayout>
-
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <SeekBar
-                android:layout_width="match_parent"
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_play_box_outline_white_24dp"/>
+
+                <ImageButton
+                    android:id="@+id/stop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_stop_circle_outline_white_24dp"
+                    android:visibility="gone"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/seekBarAudio"
-                android:layout_weight="2"
-                android:padding="@dimen/paddingMinGlobal"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/message"
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBarAudio"
+                    android:layout_weight="2"
+                    android:padding="@dimen/paddingMinGlobal"/>
+
+                <TextView
+                    android:id="@+id/duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Duration"/>
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Message"/>
+                android:src="@mipmap/ic_dots_vertical_grey600_24dp"
+                android:visibility="visible"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textNote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Text note"/>
+
     </LinearLayout>
 
     <TextView
@@ -59,5 +81,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="TITLE"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 </FrameLayout>

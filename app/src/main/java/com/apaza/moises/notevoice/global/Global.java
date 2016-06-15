@@ -1,17 +1,19 @@
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.global;
 
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.apaza.moises.notevoice.model.HandlerDB;
+import com.apaza.moises.notevoice.MainActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class Global {
-
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static MainActivity context;
 
     public static void setContext(MainActivity activity){
@@ -46,5 +48,10 @@ public class Global {
 
     public static void showMessage(String message){
         Snackbar.make(getContext().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static String getCurrentDateString(){
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        return formatter.format(new Date());
     }
 }

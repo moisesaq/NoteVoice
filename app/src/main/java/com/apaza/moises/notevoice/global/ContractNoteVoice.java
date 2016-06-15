@@ -1,4 +1,4 @@
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.global;
 
 public class ContractNoteVoice {
     public static final String NAME_DB = "dataBaseNoteVoice";

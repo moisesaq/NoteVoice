@@ -1,5 +1,7 @@
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.model;
 
+
+import com.apaza.moises.notevoice.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.apaza.moises.notevoice.ListNoteFragment">
+    tools:context=".fragment.ListNoteFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/paddingMediumGlobal">
 
         <EditText
             android:id="@+id/textNote"
@@ -29,7 +30,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:visibility="gone">
 
         <Button
             android:id="@+id/play"
@@ -62,13 +64,41 @@
         android:layout_gravity="center_horizontal"
         android:visibility="gone"/>
 
-    <com.apaza.moises.notevoice.PinnedSectionListView
-        android:id="@+id/listNote"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:headerDividersEnabled="false"
-        android:footerDividersEnabled="false"
-        android:scrollbars="none"
-        android:background="@android:color/darker_gray"/>
+        android:layout_height="match_parent">
 
+        <com.apaza.moises.notevoice.view.PinnedSectionListView
+            android:id="@+id/listNote"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:headerDividersEnabled="false"
+            android:footerDividersEnabled="false"
+            android:scrollbars="none"
+            android:background="@android:color/darker_gray"
+            android:visibility="invisible"/>
+
+        <LinearLayout
+            android:id="@+id/viewMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Loading"
+                android:layout_gravity="center" />
+
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

@@ -1,8 +1,9 @@
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.apaza.moises.notevoice.global.ContractNoteVoice;
 import com.apaza.moises.notevoice.database.DaoMaster;
 import com.apaza.moises.notevoice.database.DaoSession;
 

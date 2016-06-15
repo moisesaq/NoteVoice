@@ -1,4 +1,4 @@
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.model;
 import android.content.Context;
 import android.media.MediaPlayer;
 

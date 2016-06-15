@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.apaza.moises.notevoice;
+package com.apaza.moises.notevoice.view;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -36,6 +36,8 @@ import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+
+import com.apaza.moises.notevoice.BuildConfig;
 
 /**
  * ListView, which is capable to pin section views at its top while the rest is still scrolled.
