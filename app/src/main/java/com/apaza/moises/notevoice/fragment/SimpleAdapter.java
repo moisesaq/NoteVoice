@@ -3,6 +3,7 @@ package com.apaza.moises.notevoice.fragment;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.model.Item;
+import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.model.ViewHolder;
 import com.apaza.moises.notevoice.view.PinnedSectionListView;
 
@@ -30,6 +32,8 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
     private Context context;
     LayoutInflater inflater;
     private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
+
+    private ViewHolder viewHolder;
 
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
@@ -62,8 +66,10 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
             holder.play = (ImageButton)view.findViewById(R.id.play);
             holder.stop = (ImageButton)view.findViewById(R.id.stop);
             holder.seekBarAudio = (SeekBar)view.findViewById(R.id.seekBarAudio);
+            holder.duration = (TextView)view.findViewById(R.id.duration);
             holder.textNote = (TextView)view.findViewById(R.id.textNote);
             holder.more = (ImageButton)view.findViewById(R.id.more);
+            holder.dateCreated = (TextView)view.findViewById(R.id.dateCreated);
             holder.titleSection = (TextView)view.findViewById(R.id.titleSection);
             view.setTag(holder);
         }else{
@@ -79,7 +85,8 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
             final Note note = item.note;
             holder.viewItem.setVisibility(View.VISIBLE);
             holder.titleSection.setVisibility(View.GONE);
-            holder.play.setOnClickListener(new View.OnClickListener() {
+            prepareAudio(holder, item.note);
+            /*holder.play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startAudio(Integer.valueOf(note.getPathAudio()), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
@@ -95,7 +102,7 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
                 public void onClick(View v) {
 
                 }
-            });
+            });*/
             holder.more.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -103,6 +110,7 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
                 }
             });
             holder.textNote.setText(note.getText());
+            holder.dateCreated.setText(note.getDateCreated());
         }
 
         return view;
@@ -121,54 +129,90 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
         return viewType == Item.SECTION;
     }
 
-    public void startAudio(int recourseId, SeekBar seekBar, MediaPlayer.OnCompletionListener listener){
-        try{
-            if(mediaPlayer != null){
-                if(mediaPlayer.isPlaying())
-                    stopAudio();
+    public void prepareAudio(final ViewHolder holder, final Note note){
+        showPlayButton(holder);
+        holder.duration.setText(Media.formatDuration(Media.getDurationAudioFile(note.getPathAudio())));
+
+        holder.play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStopButton(holder);
+                startAudio1(note.getPathAudio(), holder, new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        stopAudio1();
+                        //showPlayButton(holder);
+                    }
+                });
+
             }
-            this.seekBar = seekBar;
-            mediaPlayer = MediaPlayer.create(Global.getContext(), recourseId);
+        });
 
-            finalTime = mediaPlayer.getDuration();
-            startTime = mediaPlayer.getCurrentPosition();
-            this.seekBar.setMax(finalTime);
-            mediaPlayer.setOnCompletionListener(listener);
-            mediaPlayer.start();
+        holder.stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Global.getMedia().stopAudio();
+                showPlayButton(holder);
+            }
+        });
+    }
 
-            seekBar.setProgress(startTime);
+    private Runnable UpdateSeekBar = new Runnable() {
+        @Override
+        public void run() {
+            startTime = Global.getMedia().getAudioCurrentPosition();//mediaPlayer.getCurrentPosition();
+            viewHolder.seekBarAudio.setProgress(startTime);
+            handler.postDelayed(this, 100);
+        }
+    };
+
+    public void startAudio1(String pathAudio, ViewHolder holder, MediaPlayer.OnCompletionListener listener){
+        try{
+            if(Global.getMedia().isAudioPlaying()){
+                stopAudio1();
+            }
+            Global.getMedia().setupAudio(pathAudio);
+            this.viewHolder = holder;
+
+            finalTime = Global.getMedia().getAudioMaxDuration();
+            startTime = Global.getMedia().getAudioCurrentPosition();
+            this.viewHolder.seekBarAudio.setMax(finalTime);
+            this.viewHolder.seekBarAudio.setProgress(startTime);
+
+            Global.getMedia().startAudio(listener);
             handler.postDelayed(UpdateSeekBar, 100);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public void stopAudio(){
+    public void stopAudio1(){
         try{
-            if(mediaPlayer != null){
-                finalTime = 0;
-                startTime = 0;
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
-                //new MediaPlayer.OnCompletionListener().onCompletion(mediaPlayer);
+            Global.getMedia().stopAudio();
+            //showPlayButton(holder);
+            if(viewHolder != null){
+                showPlayButton(viewHolder);
+                viewHolder.seekBarAudio.setProgress(0);
             }
-            if(seekBar != null)
-                seekBar.setProgress(0);
+
             handler.removeCallbacks(UpdateSeekBar);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private Runnable UpdateSeekBar = new Runnable() {
-        @Override
-        public void run() {
-            startTime = mediaPlayer.getCurrentPosition();
-            seekBar.setProgress(startTime);
-            handler.postDelayed(this, 100);
-        }
-    };
+    private void showPlayButton(ViewHolder holder) {
+        holder.play.setVisibility(View.VISIBLE);
+        holder.stop.setVisibility(View.GONE);
+        //holder.error.setVisibility(View.GONE);
+    }
+
+
+    private void showStopButton(ViewHolder holder) {
+        holder.stop.setVisibility(View.VISIBLE);
+        holder.play.setVisibility(View.GONE);
+        //holder.error.setVisibility(View.GONE);
+    }
 
     private void showMenu(ViewHolder holder, final Item itemList){
         PopupMenu popupMenu = new PopupMenu(getContext(), holder.more);

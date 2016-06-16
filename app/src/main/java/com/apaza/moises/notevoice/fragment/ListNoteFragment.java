@@ -4,37 +4,34 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SectionIndexer;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Item;
-import com.apaza.moises.notevoice.model.ViewHolder;
+import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.PinnedSectionListView;
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.database.NoteDao;
 import com.apaza.moises.notevoice.global.Global;
-import com.apaza.moises.notevoice.model.NoteTest;
 
 import java.util.List;
 
-public class ListNoteFragment extends Fragment implements View.OnClickListener, SimpleAdapter.OnItemOptionClickListener{
+public class ListNoteFragment extends Fragment implements View.OnClickListener, SimpleAdapter.OnItemOptionClickListener,
+        View.OnTouchListener{
 
     private NoteDao noteDao;
 
@@ -57,6 +54,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
 
     public int sectionPosition;
     public int listPosition;
+
+    private String outputFilename;
+    private Handler recordHandler = new Handler();
+    private Runnable recordRunnable;
 
     public ListNoteFragment() {
         // Required empty public constructor
@@ -90,7 +91,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     private void setupView(){
         textNote = (EditText)view.findViewById(R.id.textNote);
         recorder = (ImageButton)view.findViewById(R.id.recorder);
-        recorder.setOnClickListener(this);
+        recorder.setOnTouchListener(this);
+        //recorder.setOnClickListener(this);
 
         viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
         loading = (ProgressBar)view.findViewById(R.id.loading);
@@ -112,17 +114,25 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void saveNote(){
-        if(noteDao.insert(getNoteOfView()) > 0)
-            Global.showMessage("Note recorded");
+        Note note = getNote();
+        if(note != null){
+            if(noteDao.insert(getNote()) > 0){
+                noteAdapter.add(new Item(Item.NOTE, note));
+                Global.showMessage("Note recorded");
+            }
+
+        }
+
     }
 
-    private Note getNoteOfView(){
+    private Note getNote(){
+        String text = textNote.getText().toString();
         Note note = new Note();
         note.setCode(Global.generateCodeUnique("note"));
-        note.setText(textNote.getText().toString());
-        note.setPathAudio(String.valueOf(R.raw.detective));
+        note.setText(text.isEmpty() ? "This is a note" : text);
+        note.setPathAudio(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
         note.setColor(String.valueOf(Global.colorGenerator.getRandomColor()));
-        note.setDateCreated(Global.getCurrentDateString());
+        note.setDateCreated(Utils.getCurrentDateString());
         return note;
     }
 
@@ -201,6 +211,114 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         sectionPosition++;
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startAnimationRecord();
+                startRecording();
+                break;
+
+            case MotionEvent.ACTION_UP:
+                endAnimationRecord();
+                Handler recordMissingEndingHandler = new Handler();
+                recordMissingEndingHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        stopRecording();
+                    }
+                }, Media.RECORD_MISSING_ENDING_FIX_INTERVAL);
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                endAnimationRecord();
+                break;
+        }
+        return false;
+    }
+
+    public void startAnimationRecord() {
+        recorder.setBackgroundColor(getActivity().getResources().getColor(R.color.colorAccent));
+        /*Animation animRecord = AnimationUtils.loadAnimation(getActivity(), R.anim.begin_record);
+        animRecord.setFillAfter(true);
+        containerButtons.startAnimation(animRecord);*/
+    }
+
+    public void endAnimationRecord() {
+        recorder.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
+        /*Animation animEnd = AnimationUtils.loadAnimation(getActivity(), R.anim.end_record);
+        animEnd.setFillAfter(true);
+        containerButtons.startAnimation(animEnd);*/
+    }
+
+    protected void startRecording() {
+        Global.getMedia().startAudioPlaying(R.raw.prip, new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                outputFilename = Media.generateOutputFilename();
+                Log.d("FILE NAME ", " FIRST >>> " + Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+                Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+                startMaxLengthTimer();
+            }
+        });
+    }
+
+    protected void startMaxLengthTimer() {
+        stopMaxLengthTimer();
+        recordHandler.postDelayed(
+                recordRunnable = new Runnable() {
+                    public void run() {
+                        stopRecording();
+                    }
+                }, Media.RECORD_MAX_LENGTH_INTERVAL);
+    }
+
+    protected void stopMaxLengthTimer() {
+        recordHandler.removeCallbacks(recordRunnable);
+    }
+
+    protected void stopRecording() {
+        // Button released before start recording?
+        if (Global.getMedia().isRecording()) {
+            //setRecordBackground(R.drawable.radio_sending);
+            stopMaxLengthTimer();
+            Global.getMedia().stopAudioRecording();
+
+            // Recorded more than a half second?
+            if (Global.getMedia().getAudioLength(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename) > 500) {
+                if (!outputFilename.equals("")){
+                    //Log.d("FILE NAME ", " >>>>>>>>>>> EMPTY");
+                    saveNote();
+                }else{
+                    Log.d("ERROR FILE NAME ", Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
+                }
+                //setRecordBackground(R.drawable.radio_success);
+            } else {
+                //setRecordBackground(R.drawable.radio_error);
+            }
+        }
+    }
+
+    /*protected void messageRecording() {
+        Message message = new Message();
+        message
+                .setTypeMessage(Utils.TYPE_MESSAGE_AUDIO)
+                .setFileName(Global.AUDIO_DESTINATION_DIRECTORY + outputFilename)
+                .setCreatedAt(Utils.getCurrentTime(Utils.getCurrentDate()))
+                .setSender(Utils.getSenderUser());
+        adapter.add(message);
+        adapter.notifyDataSetChanged();
+        scrollDown();
+        hideNote();
+        Global.getModernWsClient().sendAudio(receiverUser, Global.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+    }*/
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
     public void generateListTest(int countItem, String titleHeader){
         Item section = new Item(Item.SECTION, titleHeader);
         section.sectionPosition = sectionPosition;
@@ -215,16 +333,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
             noteAdapter.add(item);
         }
         sectionPosition++;
-    }
-
-
-
-
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

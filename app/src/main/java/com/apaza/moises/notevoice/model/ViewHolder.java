@@ -9,7 +9,9 @@ public class ViewHolder {
     public LinearLayout viewItem;
     public ImageButton play, stop;
     public SeekBar seekBarAudio;
+    public TextView duration;
     public TextView textNote;
-    public TextView titleSection;
     public ImageButton more;
+    public TextView dateCreated;
+    public TextView titleSection;
 }

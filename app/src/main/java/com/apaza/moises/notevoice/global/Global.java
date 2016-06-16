@@ -10,14 +10,15 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.apaza.moises.notevoice.model.HandlerDB;
 import com.apaza.moises.notevoice.MainActivity;
+import com.apaza.moises.notevoice.model.Media;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class Global {
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static MainActivity context;
+    private static Media media;
 
     public static void setContext(MainActivity activity){
         context = activity;
@@ -31,6 +32,11 @@ public class Global {
         return HandlerDB.getInstance(context);
     }
 
+    public static Media getMedia(){
+        if(media == null)
+            media = new Media();
+        return media;
+    }
     public static ColorGenerator colorGenerator = ColorGenerator.MATERIAL;
 
     public static Drawable getTextDrawable(String text){
@@ -69,8 +75,5 @@ public class Global {
         dialog.create().show();
     }
 
-    public static String getCurrentDateString(){
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-        return formatter.format(new Date());
-    }
+
 }

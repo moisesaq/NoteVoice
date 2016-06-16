@@ -3,4 +3,5 @@
     <string name="app_name">NoteVoice</string>
     <string name="delete">Eliminar</string>
     <string name="edit">Editar</string>
+    <string name="yesterday">Ayer</string>
 </resources>
