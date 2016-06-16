@@ -2,6 +2,7 @@ package com.apaza.moises.notevoice.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -31,26 +32,14 @@ import com.apaza.moises.notevoice.database.NoteDao;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.model.NoteTest;
 
-import java.sql.Date;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
-public class ListNoteFragment extends Fragment implements View.OnClickListener{
+public class ListNoteFragment extends Fragment implements View.OnClickListener, SimpleAdapter.OnItemOptionClickListener{
 
     private NoteDao noteDao;
 
-    private MediaPlayer mediaPlayer;
-    private MediaRecorder mediaRecorder;
-
     private EditText textNote;
     private ImageButton recorder;
-
-    private SeekBar seekBar;
-    private int startTime = 0;
-    private int finalTime = 0;
-    private Handler handler = new Handler();
-    public static int oneTimeOnly = 0;
 
     private View view;
     private static final String ARG_PARAM1 = "param1";
@@ -59,7 +48,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
     private OnFragmentInteractionListener mListener;
 
     private ListView list;
-    private ListNoteAdapter adapter;
 
     private PinnedSectionListView listNote;
     private SimpleAdapter noteAdapter;
@@ -104,16 +92,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         recorder = (ImageButton)view.findViewById(R.id.recorder);
         recorder.setOnClickListener(this);
 
-        Button play = (Button) view.findViewById(R.id.play);
-        play.setOnClickListener(this);
-        Button stop = (Button)view.findViewById(R.id.stop);
-        stop.setOnClickListener(this);
-        //seekBar = (SeekBar)view.findViewById(R.id.seekBar);
-
-        /*list = (ListView)view.findViewById(R.id.listNoteVoice);
-        adapter = new ListNoteAdapter(getActivity(), NoteTest.getListTest());
-        list.setAdapter(adapter);*/
-
         viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
         loading = (ProgressBar)view.findViewById(R.id.loading);
         message = (TextView)view.findViewById(R.id.message);
@@ -122,25 +100,11 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         clearAdapter();
         initializeAdapter();
         loadNotes();
-        /*generateListTest(5,"Android");
-        generateListTest(10,"Moises");
-        generateListTest(7,"Apaza");*/
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.play:
-                startAudio(R.raw.detective, seekBar, new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        Global.showMessage("Finished audio");
-                    }
-                });
-                break;
-            case R.id.stop:
-                stopAudio();
-                break;
             case R.id.recorder:
                 saveNote();
                 break;
@@ -167,7 +131,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             listNote.setFastScrollAlwaysVisible(true);
         }*/
-        noteAdapter = new SimpleAdapter(getActivity());
+        noteAdapter = new SimpleAdapter(getActivity(), this);
         listNote.setAdapter(noteAdapter);
     }
 
@@ -203,6 +167,25 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         listPosition = 0;
     }
 
+    @Override
+    public void onDeleteClick(final Item item) {
+        Global.showDialogConfirmation(new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Global.showMessage("Delete " + item.note.getText());
+                noteDao.delete(item.note);
+                noteAdapter.remove(item);
+                noteAdapter.notifyDataSetChanged();
+                dialog.dismiss();
+            }
+        });
+    }
+
+    @Override
+    public void onEditClick(Item item) {
+        Global.showMessage("Edit " + item.note.getText());
+    }
+
     private void addNoteToAdapter(Note note){
         Item section = new Item(Item.SECTION, "Test");
         section.sectionPosition = sectionPosition;
@@ -216,165 +199,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         noteAdapter.add(item);
 
         sectionPosition++;
-    }
-
-    public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionListView.PinnedSectionListAdapter {
-
-        private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
-
-        public SimpleAdapter(Context context) {
-            super(context, R.layout.item_note_audio);
-        }
-
-        protected void prepareSections(int sectionsNumber) { }
-
-        protected void onSectionAdded(Item section, int sectionPosition) { }
-
-        @Override public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            final ViewHolder holder;
-            if(view == null){
-                view = getActivity().getLayoutInflater().inflate(R.layout.item_note_audio, null);
-                holder = new ViewHolder();
-                holder.viewItem = (LinearLayout)view.findViewById(R.id.viewItem);
-                holder.play = (ImageButton)view.findViewById(R.id.play);
-                holder.stop = (ImageButton)view.findViewById(R.id.stop);
-                holder.seekBarAudio = (SeekBar)view.findViewById(R.id.seekBarAudio);
-                holder.textNote = (TextView)view.findViewById(R.id.textNote);
-                holder.titleSection = (TextView)view.findViewById(R.id.titleSection);
-                view.setTag(holder);
-            }else{
-                holder = (ViewHolder)view.getTag();
-            }
-            final Item item = getItem(position);
-            if(item.type == Item.SECTION){
-                holder.titleSection.setVisibility(View.VISIBLE);
-                holder.viewItem.setVisibility(View.GONE);
-                holder.titleSection.setText(item.title);
-                view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
-            }else{
-                final Note note = item.note;
-                holder.viewItem.setVisibility(View.VISIBLE);
-                holder.titleSection.setVisibility(View.GONE);
-                holder.play.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startAudio(Integer.valueOf(note.getPathAudio()), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                stopAudio();
-                            }
-                        });
-                    }
-                });
-                holder.stop.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-                holder.textNote.setText(note.getText() + " date: " + note.getDateCreated());
-            }
-
-            return view;
-        }
-
-        @Override public int getViewTypeCount() {
-            return 2;
-        }
-
-        @Override public int getItemViewType(int position) {
-            return getItem(position).type;
-        }
-
-        @Override
-        public boolean isItemViewTypePinned(int viewType) {
-            return viewType == Item.SECTION;
-        }
-    }
-
-    private Runnable UpdateSeekBar = new Runnable() {
-        @Override
-        public void run() {
-            startTime = mediaPlayer.getCurrentPosition();
-            seekBar.setProgress(startTime);
-            handler.postDelayed(this, 100);
-        }
-    };
-
-    public void startAudio(int recourseId, SeekBar seekBar, MediaPlayer.OnCompletionListener listener){
-        try{
-            if(mediaPlayer != null){
-                if(mediaPlayer.isPlaying())
-                    stopAudio();
-            }
-            this.seekBar = seekBar;
-            mediaPlayer = MediaPlayer.create(getActivity().getApplicationContext(), recourseId);
-
-            finalTime = mediaPlayer.getDuration();
-            startTime = mediaPlayer.getCurrentPosition();
-            this.seekBar.setMax(finalTime);
-            mediaPlayer.setOnCompletionListener(listener);
-            mediaPlayer.start();
-
-            seekBar.setProgress(startTime);
-            handler.postDelayed(UpdateSeekBar, 100);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public void stopAudio(){
-        try{
-            if(mediaPlayer != null){
-                finalTime = 0;
-                startTime = 0;
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = null;
-                //new MediaPlayer.OnCompletionListener().onCompletion(mediaPlayer);
-            }
-            if(seekBar != null)
-                seekBar.setProgress(0);
-            handler.removeCallbacks(UpdateSeekBar);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    public class FastScrollAdapter extends SimpleAdapter implements SectionIndexer {
-
-        private Item[] sections;
-
-        public FastScrollAdapter(Context context) {
-            super(context);
-        }
-
-        @Override protected void prepareSections(int sectionsNumber) {
-            sections = new Item[sectionsNumber];
-        }
-
-        @Override protected void onSectionAdded(Item section, int sectionPosition) {
-            sections[sectionPosition] = section;
-        }
-
-        @Override public Item[] getSections() {
-            return sections;
-        }
-
-        @Override public int getPositionForSection(int section) {
-            if (section >= sections.length) {
-                section = sections.length - 1;
-            }
-            return sections[section].listPosition;
-        }
-
-        @Override public int getSectionForPosition(int position) {
-            if (position >= getCount()) {
-                position = getCount() - 1;
-            }
-            return getItem(position).sectionPosition;
-        }
     }
 
     public void generateListTest(int countItem, String titleHeader){
@@ -393,54 +217,9 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener{
         sectionPosition++;
     }
 
-    public class ListNoteAdapter extends ArrayAdapter<NoteTest>{
 
-        public ListNoteAdapter(Context context, List<NoteTest> list) {
-            super(context, R.layout.item_note_audio, list);
-        }
 
-        @Override
-        public NoteTest getItem(int position) {
-            return super.getItem(position);
-        }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            final ViewHolder holder;
-            if(view == null){
-                view = getActivity().getLayoutInflater().inflate(R.layout.item_note_audio, null);
-                holder = new ViewHolder();
-                holder.play = (ImageButton)view.findViewById(R.id.play);
-                holder.stop = (ImageButton)view.findViewById(R.id.stop);
-                holder.seekBarAudio = (SeekBar)view.findViewById(R.id.seekBarAudio);
-                holder.textNote = (TextView)view.findViewById(R.id.textNote);
-                view.setTag(holder);
-            }else{
-                holder = (ViewHolder)view.getTag();
-            }
-            final NoteTest noteTest = getItem(position);
-            holder.play.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startAudio(noteTest.getAudio(), holder.seekBarAudio, new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            stopAudio();
-                        }
-                    });
-                }
-            });
-            holder.stop.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-            holder.textNote.setText(noteTest.getIdNote() + " - " + noteTest.getMessage());
-            return view;
-        }
-    }
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {

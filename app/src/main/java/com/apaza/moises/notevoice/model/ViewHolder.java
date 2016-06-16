@@ -11,4 +11,5 @@ public class ViewHolder {
     public SeekBar seekBarAudio;
     public TextView textNote;
     public TextView titleSection;
+    public ImageButton more;
 }

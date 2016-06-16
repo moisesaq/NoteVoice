@@ -2,9 +2,6 @@ package com.apaza.moises.notevoice.model;
 
 import com.apaza.moises.notevoice.database.Note;
 
-/**
- * Created by moises on 15/06/16.
- */
 public class Item {
     public static final int SECTION = 0;
     public static final int NOTE = 1;

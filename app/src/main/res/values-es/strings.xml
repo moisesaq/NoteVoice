@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NoteVoice</string>
+    <string name="delete">Eliminar</string>
+    <string name="edit">Editar</string>
+</resources>

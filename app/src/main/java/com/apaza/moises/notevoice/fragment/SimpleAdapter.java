@@ -4,7 +4,10 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
+import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -20,8 +23,11 @@ import com.apaza.moises.notevoice.model.Item;
 import com.apaza.moises.notevoice.model.ViewHolder;
 import com.apaza.moises.notevoice.view.PinnedSectionListView;
 
+import java.lang.reflect.Field;
+
 public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionListView.PinnedSectionListAdapter{
 
+    private Context context;
     LayoutInflater inflater;
     private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
 
@@ -34,9 +40,12 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
     private int finalTime = 0;
     private Handler handler = new Handler();
 
-    public SimpleAdapter(Context context) {
+    public OnItemOptionClickListener listener;
+
+    public SimpleAdapter(Context context, OnItemOptionClickListener listener) {
         super(context, R.layout.item_note_audio);
         this.inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.listener = listener;
     }
 
     protected void prepareSections(int sectionsNumber) { }
@@ -54,6 +63,7 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
             holder.stop = (ImageButton)view.findViewById(R.id.stop);
             holder.seekBarAudio = (SeekBar)view.findViewById(R.id.seekBarAudio);
             holder.textNote = (TextView)view.findViewById(R.id.textNote);
+            holder.more = (ImageButton)view.findViewById(R.id.more);
             holder.titleSection = (TextView)view.findViewById(R.id.titleSection);
             view.setTag(holder);
         }else{
@@ -86,6 +96,12 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
 
                 }
             });
+            holder.more.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMenu(holder, item);
+                }
+            });
             holder.textNote.setText(note.getText());
         }
 
@@ -104,15 +120,6 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
     public boolean isItemViewTypePinned(int viewType) {
         return viewType == Item.SECTION;
     }
-
-    private Runnable UpdateSeekBar = new Runnable() {
-        @Override
-        public void run() {
-            startTime = mediaPlayer.getCurrentPosition();
-            seekBar.setProgress(startTime);
-            handler.postDelayed(this, 100);
-        }
-    };
 
     public void startAudio(int recourseId, SeekBar seekBar, MediaPlayer.OnCompletionListener listener){
         try{
@@ -152,5 +159,56 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private Runnable UpdateSeekBar = new Runnable() {
+        @Override
+        public void run() {
+            startTime = mediaPlayer.getCurrentPosition();
+            seekBar.setProgress(startTime);
+            handler.postDelayed(this, 100);
+        }
+    };
+
+    private void showMenu(ViewHolder holder, final Item itemList){
+        PopupMenu popupMenu = new PopupMenu(getContext(), holder.more);
+        popupMenu.inflate(R.menu.popup_menu);
+        // Force icons to show
+        Object menuHelper;
+        Class[] argTypes;
+        try {
+            Field fMenuHelper = PopupMenu.class.getDeclaredField("mPopup");
+            fMenuHelper.setAccessible(true);
+            menuHelper = fMenuHelper.get(popupMenu);
+            argTypes = new Class[] { boolean.class };
+            menuHelper.getClass().getDeclaredMethod("setForceShowIcon", argTypes).invoke(menuHelper, true);
+        } catch (Exception e) {
+            Log.w("SIMPLE ADAPTER", "error forcing menu icons to show", e);
+            popupMenu.show();
+            return;
+        }
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.action_delete:
+                        listener.onDeleteClick(itemList);
+
+                        return true;
+                    case R.id.action_edit:
+                        listener.onEditClick(itemList);
+
+                        return true;
+                }
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
+
+    public interface OnItemOptionClickListener{
+        void onDeleteClick(Item item);
+        void onEditClick(Item item);
     }
 }

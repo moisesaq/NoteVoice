@@ -1,7 +1,10 @@
 package com.apaza.moises.notevoice.global;
 
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -47,7 +50,23 @@ public class Global {
     }
 
     public static void showMessage(String message){
-        Snackbar.make(getContext().findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
+        View view = getContext().findViewById(android.R.id.content);
+        if(view != null)
+            Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public static void showDialogConfirmation(DialogInterface.OnClickListener positiveListener){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Confirmar");
+        dialog.setMessage("Desea eliminar");
+        dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setPositiveButton(android.R.string.yes, positiveListener);
+        dialog.create().show();
     }
 
     public static String getCurrentDateString(){
