@@ -111,7 +111,6 @@ public class Media {
 
     public void startAudioRecording(String outputFilename) {
         if (mediaPlayer.isPlaying()) stopAudio();
-
         try {
             recording = true;
             mediaRecorder = new MediaRecorder();
@@ -153,8 +152,8 @@ public class Media {
         }
     }
 
-    public boolean eraseAudioFromDisk(String folder, String filename) {
-        File file = new File(folder, filename);
+    public boolean eraseAudioFromDisk(String pathFileName) {
+        File file = new File(pathFileName);
         return file.exists() && file.delete();
     }
 

@@ -1,7 +1,11 @@
 package com.apaza.moises.notevoice.global;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -75,5 +79,15 @@ public class Global {
         dialog.create().show();
     }
 
+
+    public static void playAlert(Context context){
+        try{
+            Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone ring = RingtoneManager.getRingtone(context, alarm);
+            ring.play();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
 }

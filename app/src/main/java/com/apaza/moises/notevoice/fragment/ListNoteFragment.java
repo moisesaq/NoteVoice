@@ -1,5 +1,6 @@
 package com.apaza.moises.notevoice.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,6 +8,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -33,8 +36,6 @@ import java.util.List;
 public class ListNoteFragment extends Fragment implements View.OnClickListener, SimpleAdapter.OnItemOptionClickListener,
         View.OnTouchListener{
 
-    private NoteDao noteDao;
-
     private EditText textNote;
     private ImageButton recorder;
 
@@ -42,9 +43,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     private static final String ARG_PARAM1 = "param1";
     private String mParam1;
 
-    private OnFragmentInteractionListener mListener;
-
-    private ListView list;
+    private OnListNoteFragmentListener mListener;
 
     private PinnedSectionListView listNote;
     private SimpleAdapter noteAdapter;
@@ -58,6 +57,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     private String outputFilename;
     private Handler recordHandler = new Handler();
     private Runnable recordRunnable;
+
+    ActionBar actionBar;
 
     public ListNoteFragment() {
         // Required empty public constructor
@@ -74,11 +75,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        noteDao = Global.getHandlerDB().getDaoSession().getNoteDao();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
-
+        actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
     }
 
     @Override
@@ -92,7 +92,6 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         textNote = (EditText)view.findViewById(R.id.textNote);
         recorder = (ImageButton)view.findViewById(R.id.recorder);
         recorder.setOnTouchListener(this);
-        //recorder.setOnClickListener(this);
 
         viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
         loading = (ProgressBar)view.findViewById(R.id.loading);
@@ -114,18 +113,17 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void saveNote(){
-        Note note = getNote();
+        Note note = getNoteOfView();
         if(note != null){
-            if(noteDao.insert(getNote()) > 0){
+            if(Global.getHandlerDB().getDaoSession().getNoteDao().insert(getNoteOfView()) > 0){
                 noteAdapter.add(new Item(Item.NOTE, note));
                 Global.showMessage("Note recorded");
             }
-
         }
 
     }
 
-    private Note getNote(){
+    private Note getNoteOfView(){
         String text = textNote.getText().toString();
         Note note = new Note();
         note.setCode(Global.generateCodeUnique("note"));
@@ -147,7 +145,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
 
     private void loadNotes(){
         viewMessage.setVisibility(View.VISIBLE);
-        List<Note> list = noteDao.queryBuilder().list();
+        List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
         if(list != null && list.size() > 0){
             viewMessage.setVisibility(View.INVISIBLE);
             listNote.setVisibility(View.VISIBLE);
@@ -183,9 +181,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Global.showMessage("Delete " + item.note.getText());
-                noteDao.delete(item.note);
+                Global.getHandlerDB().getDaoSession().getNoteDao().delete(item.note);
                 noteAdapter.remove(item);
                 noteAdapter.notifyDataSetChanged();
+                Global.getMedia().eraseAudioFromDisk(item.note.getPathAudio());
                 dialog.dismiss();
             }
         });
@@ -193,7 +192,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onEditClick(Item item) {
-        Global.showMessage("Edit " + item.note.getText());
+        //Global.showMessage("Edit " + item.note.getText());
+        mListener.onEditNoteClick(item.note);
     }
 
     private void addNoteToAdapter(Note note){
@@ -234,6 +234,12 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
                 break;
         }
         return false;
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(false);
     }
 
     public void startAnimationRecord() {
@@ -313,9 +319,9 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         Global.getModernWsClient().sendAudio(receiverUser, Global.AUDIO_DESTINATION_DIRECTORY + outputFilename);
     }*/
 
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(Note note) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onEditNoteClick(note);
         }
     }
 
@@ -336,13 +342,13 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnListNoteFragmentListener) {
+            mListener = (OnListNoteFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnDetailNoteListener");
         }
     }
 
@@ -352,7 +358,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface OnListNoteFragmentListener {
+        void onEditNoteClick(Note note);
     }
 }

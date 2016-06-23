@@ -7,4 +7,6 @@
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="yesterday">Yesterday</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
 </resources>

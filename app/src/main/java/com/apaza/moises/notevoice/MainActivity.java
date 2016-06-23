@@ -5,18 +5,17 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.apaza.moises.notevoice.database.Note;
+import com.apaza.moises.notevoice.fragment.DetailNote;
 import com.apaza.moises.notevoice.fragment.ListNoteFragment;
 import com.apaza.moises.notevoice.global.Global;
 
-public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnListNoteFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
     private void showFragment(Fragment fragment){
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(fragment.getClass().getName());
         ft.replace(R.id.contentMain,fragment);
         ft.commit();
@@ -47,12 +47,8 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -61,12 +57,20 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onEditNoteClick(Note note) {
+        showFragment(DetailNote.newInstance(note.getId()));
+    }
 
+    @Override
+    public void onBackPressed(){
+        if(getFragmentManager().getBackStackEntryCount() > 1)
+            getFragmentManager().popBackStack();
+        else
+            finish();
     }
 
     private void setupFloatingButton(){
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if(fab != null)
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
                     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
-            });
+            });*/
     }
 
 }

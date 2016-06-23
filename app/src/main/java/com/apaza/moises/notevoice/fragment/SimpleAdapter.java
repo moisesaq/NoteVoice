@@ -34,11 +34,6 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
     private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
 
     private ViewHolder viewHolder;
-
-    private MediaPlayer mediaPlayer;
-    private MediaRecorder mediaRecorder;
-    private SeekBar seekBar;
-
     public static int oneTimeOnly = 0;
     private int startTime = 0;
     private int finalTime = 0;
@@ -194,7 +189,6 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
                 showPlayButton(viewHolder);
                 viewHolder.seekBarAudio.setProgress(0);
             }
-
             handler.removeCallbacks(UpdateSeekBar);
         }catch (Exception e){
             e.printStackTrace();
