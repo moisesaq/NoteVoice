@@ -126,10 +126,10 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     private Note getNoteOfView(){
         String text = textNote.getText().toString();
         Note note = new Note();
-        note.setCode(Global.generateCodeUnique("note"));
+        note.setCode(Utils.generateCodeUnique("note"));
         note.setText(text.isEmpty() ? "This is a note" : text);
         note.setPathAudio(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
-        note.setColor(String.valueOf(Global.colorGenerator.getRandomColor()));
+        note.setColor(String.valueOf(Utils.colorGenerator.getRandomColor()));
         note.setDateCreated(Utils.getCurrentDateString());
         return note;
     }

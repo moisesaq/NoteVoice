@@ -1,5 +1,9 @@
 package com.apaza.moises.notevoice.global;
 
+import android.graphics.drawable.Drawable;
+
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.apaza.moises.notevoice.R;
 
 import java.text.ParseException;
@@ -8,10 +12,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * Created by moises on 16/06/16.
- */
 public class Utils {
+    //NOTIFICATIONS
+    public static final String SEE_ACTION = "SEE_ACTION";
+    public static final String YES_ACTION = "YES_ACTION";
+    public static final String NO_ACTION = "NO_ACTION";
+
+    public static final int NOTIFICATION_REQUEST_CODE = 12345;
     //DATE FORMAT
     //public static final String DATE_FORMAT_INPUT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String DATE_FORMAT_INPUT = "yyyy-MM-dd";
@@ -82,5 +89,23 @@ public class Utils {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public static ColorGenerator colorGenerator = ColorGenerator.MATERIAL;
+
+    public static Drawable getTextDrawable(String text){
+        int color = colorGenerator.getRandomColor();
+        TextDrawable drawable = TextDrawable.builder()
+                .beginConfig()
+                .withBorder(4) /* thickness in px */
+                .endConfig()
+                .buildRoundRect(text.substring(0,1), color, 5);
+        return drawable;
+    }
+
+    public static String generateCodeUnique(String text){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss", Locale.getDefault());
+        String date = dateFormat.format(new Date());
+        return text + "-" + date;
     }
 }

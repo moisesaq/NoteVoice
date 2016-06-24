@@ -1,5 +1,6 @@
 package com.apaza.moises.notevoice.global;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
@@ -41,23 +42,7 @@ public class Global {
             media = new Media();
         return media;
     }
-    public static ColorGenerator colorGenerator = ColorGenerator.MATERIAL;
 
-    public static Drawable getTextDrawable(String text){
-        int color = colorGenerator.getRandomColor();
-        TextDrawable drawable = TextDrawable.builder()
-                .beginConfig()
-                .withBorder(4) /* thickness in px */
-                .endConfig()
-                .buildRoundRect(text.substring(0,1), color, 5);
-        return drawable;
-    }
-
-    public static String generateCodeUnique(String text){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss", Locale.getDefault());
-        String date = dateFormat.format(new Date());
-        return text + "-" + date;
-    }
 
     public static void showMessage(String message){
         View view = getContext().findViewById(android.R.id.content);
@@ -89,5 +74,7 @@ public class Global {
             e.printStackTrace();
         }
     }
+
+
 
 }

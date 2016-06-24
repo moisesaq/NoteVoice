@@ -70,8 +70,7 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
             actionBar.setHomeAsUpIndicator(R.mipmap.ic_close_white_24dp);
         }
 
-        Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(), 100, alarmIntent, 0);//PendingIntent.FLAG_CANCEL_CURRENT);
+
     }
 
     @Override
@@ -132,7 +131,8 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
                 });
                 break;
             case R.id.stop:
-                stopAudio();
+                //stopAudio();
+                cancelAlarm(ALARM_REQUEST_CODE);
                 break;
             case R.id.testAlarm:
                 startAlarm();
@@ -140,11 +140,27 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
         }
     }
 
+    public static int ALARM_REQUEST_CODE = 100;
+
     private void startAlarm(){
+        Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
+        alarmIntent.putExtra("code", ALARM_REQUEST_CODE);
+
+        pendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(), ALARM_REQUEST_CODE, alarmIntent, 0);//PendingIntent.FLAG_CANCEL_CURRENT);
+
         AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-        int interval = 5000;
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 30 * 1000, pendingIntent);
+        Global.showMessage("Alarm set for 30 second");
     }
+
+    private void cancelAlarm(int requestCode){
+        Intent intent = new Intent(getActivity(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(), ALARM_REQUEST_CODE, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        Global.showMessage("Alarm canceled!");
+    }
+
 
     private Runnable UpdateSeekBar = new Runnable() {
         @Override

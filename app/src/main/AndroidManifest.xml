@@ -29,6 +29,14 @@
                 <action android:name="com.apaza.moises.alarmnotevoice"/>
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".global.ActionNotificationReceiver"
+            android:exported="false">
+            <intent-filter >
+                <action android:name="SEE_ACTION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
