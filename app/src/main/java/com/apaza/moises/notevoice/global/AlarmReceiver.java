@@ -37,7 +37,9 @@ public class AlarmReceiver extends BroadcastReceiver{
         PendingIntent pendingIntentSee = PendingIntent.getBroadcast(context, Utils.NOTIFICATION_REQUEST_CODE,intentSee, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Intent intent = new Intent(context, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, Utils.NOTIFICATION_REQUEST_CODE,intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); //This clear and restart the app
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, Utils.NOTIFICATION_REQUEST_CODE,intent,PendingIntent.FLAG_CANCEL_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)

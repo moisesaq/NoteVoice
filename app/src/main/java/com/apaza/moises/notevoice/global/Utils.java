@@ -55,8 +55,8 @@ public class Utils {
     }
 
     public static Date getCurrentDate(){
-        //Calendar c = Calendar.getInstance();
-        return new Date();//c.getTime();
+        Calendar c = Calendar.getInstance();
+        return c.getTime();
     }
 
     public static int getDifferenceDaysDate(Date date){
@@ -70,10 +70,24 @@ public class Utils {
 
         return day2 - day1;
     }
-
+    /*long diff = date1.getTime() - date2.getTime();
+    long seconds = diff / 1000;
+    long minutes = seconds / 60;
+    long hours = minutes / 60;
+    long days = hours / 24;*/
     public static long getDifferenceDays(Date currentDate, Date date){
         return (currentDate.getTime() - date.getTime())/(1000*60*60*24);
     }
+
+    public static long getDifferenceMin(Date date2, Date date1){
+        try{
+            return date2.getTime();///(1000*60);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
     public static String getCurrentDateString(){
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_INPUT_FULL, Locale.getDefault());

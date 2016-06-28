@@ -236,7 +236,6 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
                         return true;
                     case R.id.action_edit:
                         listener.onEditClick(itemList);
-
                         return true;
                 }
                 return false;

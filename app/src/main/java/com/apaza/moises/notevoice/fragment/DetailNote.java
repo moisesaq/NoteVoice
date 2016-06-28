@@ -1,8 +1,10 @@
 package com.apaza.moises.notevoice.fragment;
 
 import android.app.AlarmManager;
+import android.app.DatePickerDialog;
 import android.app.DialogFragment;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -11,6 +13,8 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,20 +22,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.AlarmReceiver;
 import com.apaza.moises.notevoice.global.Global;
+import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Media;
 
-public class DetailNote extends DialogFragment implements View.OnClickListener{
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class DetailNote extends DialogFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
     private View view;
 
     private SeekBar seekBar;
     private TextView textNote, durationAudio, dateNote;
+
+    private TextView timeAlarm, dateAlarm, alarmIn;
+    private Switch statusAlarm;
 
     private int startTime = 0;
     private int finalTime = 0;
@@ -115,6 +131,26 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
         dateNote = (TextView)view.findViewById(R.id.date);
         dateNote.setText(note.getDateCreated());
 
+        timeAlarm = (TextView)view.findViewById(R.id.timeAlarm);
+        timeAlarm.setOnClickListener(this);
+        dateAlarm = (TextView)view.findViewById(R.id.dateAlarm);
+        dateAlarm.setOnClickListener(this);
+        alarmIn = (TextView)view.findViewById(R.id.alarmIn);
+        statusAlarm = (Switch)view.findViewById(R.id.statusAlarm);
+        statusAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Global.showMessage("ON");
+                    long when =(Long)timeAlarm.getTag();
+                    if(when > 0)
+                        startAlarm(when);
+                }else{
+                    Global.showMessage("OFF");
+                    cancelAlarm(ALARM_REQUEST_CODE);
+                }
+            }
+        });
         Button testAlarm = (Button)view.findViewById(R.id.testAlarm);
         testAlarm.setOnClickListener(this);
     }
@@ -137,7 +173,23 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
             case R.id.testAlarm:
                 startAlarm();
                 break;
+
+            case R.id.timeAlarm:
+                new TimeDialog(this).show(getFragmentManager(), TimeDialog.TAG);
+                break;
+
+            case R.id.dateAlarm:
+                new DateDialog(this).show(getFragmentManager(), DateDialog.TAG);
+                break;
         }
+    }
+
+    private void selectTime(){
+        //new TimeDialo
+    }
+
+    private void selectDate(){
+
     }
 
     public static int ALARM_REQUEST_CODE = 100;
@@ -200,5 +252,47 @@ public class DetailNote extends DialogFragment implements View.OnClickListener{
         }
     }
 
+    @Override
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(year, monthOfYear, dayOfMonth);
+        SimpleDateFormat format = new SimpleDateFormat("E MMM d yyyy");
+        dateAlarm.setText(format.format(c.getTime()));
+    }
 
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        Calendar c = Calendar.getInstance();
+        //c.setTimeInMillis(SystemClock.currentThreadTimeMillis());
+
+        c.setTimeInMillis(Utils.getCurrentDate().getTime());
+
+        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        c.set(Calendar.MINUTE, minute);
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm a");
+        if(DateFormat.is24HourFormat(getActivity()))
+            format = new SimpleDateFormat("HH:mm");
+        timeAlarm.setText(format.format(c.getTime()));
+        //timeAlarm.setTag(c.getTimeInMillis());
+
+        //startAlarm(c.getTimeInMillis());
+        try{
+            alarmIn.setText(new StringBuilder(">> ").append(c.getTime().getTime() - Utils.getCurrentDate().getTime()));
+            Log.d("LOG TIME ", "> "+Utils.getCurrentDate().getTime() + " >> " + c.getTime().getTime());//
+            Log.d("LOG TIME ", "> "+Utils.getDifferenceMin(new Date(), new Date()));//
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void startAlarm(long when){
+        Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
+        alarmIntent.putExtra("code", ALARM_REQUEST_CODE);
+
+        pendingIntent = PendingIntent.getBroadcast(getActivity().getApplicationContext(), ALARM_REQUEST_CODE, alarmIntent, 0);//PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, when, 1000, pendingIntent);
+    }
 }
