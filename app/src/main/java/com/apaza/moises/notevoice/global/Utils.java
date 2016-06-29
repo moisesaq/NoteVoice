@@ -1,6 +1,7 @@
 package com.apaza.moises.notevoice.global;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -79,9 +80,11 @@ public class Utils {
         return (currentDate.getTime() - date.getTime())/(1000*60*60*24);
     }
 
-    public static long getDifferenceMin(Date date2, Date date1){
+    public static long getDifferenceMin(Date date2){
         try{
-            return date2.getTime();///(1000*60);
+            long diff = date2.getTime() - getCurrentDate().getTime();
+            Log.d("MIN DIFF ", "> "+diff);
+            return diff/(1000*60);
         }catch (Exception e){
             e.printStackTrace();
         }

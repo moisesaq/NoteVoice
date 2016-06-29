@@ -144,9 +144,10 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
                     Global.showMessage("ON");
                     long when =(Long)timeAlarm.getTag();
                     if(when > 0)
+                        //Global.showMessage("Alarm in " + ((when-Utils.getCurrentDate().getTime())/(1000*60)) + "min");
                         startAlarm(when);
                 }else{
-                    Global.showMessage("OFF");
+                    //Global.showMessage("OFF");
                     cancelAlarm(ALARM_REQUEST_CODE);
                 }
             }
@@ -263,7 +264,8 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         Calendar c = Calendar.getInstance();
-        //c.setTimeInMillis(SystemClock.currentThreadTimeMillis());
+
+        c.setTimeInMillis(SystemClock.currentThreadTimeMillis());
 
         c.setTimeInMillis(Utils.getCurrentDate().getTime());
 
@@ -273,13 +275,15 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
         if(DateFormat.is24HourFormat(getActivity()))
             format = new SimpleDateFormat("HH:mm");
         timeAlarm.setText(format.format(c.getTime()));
-        //timeAlarm.setTag(c.getTimeInMillis());
+        timeAlarm.setTag(c.getTimeInMillis());
 
         //startAlarm(c.getTimeInMillis());
+        Log.d("CURRENT TIME ", "> "+Utils.getCurrentDate().toString());
+        Log.d("TIME ALARM ", "> "+c.getTime().toString());
         try{
-            alarmIn.setText(new StringBuilder(">> ").append(c.getTime().getTime() - Utils.getCurrentDate().getTime()));
-            Log.d("LOG TIME ", "> "+Utils.getCurrentDate().getTime() + " >> " + c.getTime().getTime());//
-            Log.d("LOG TIME ", "> "+Utils.getDifferenceMin(new Date(), new Date()));//
+            alarmIn.setText("Test " + Utils.getDifferenceMin(c.getTime()));
+            //Log.d("LOG TIME ", "> " + c.getTime().getTime()+"-"+Utils.getCurrentDate().getTime());//
+            Log.d("STRING TIME ", "> "+Utils.getDifferenceMin(c.getTime()));//
         }catch (Exception e){
             e.printStackTrace();
         }
