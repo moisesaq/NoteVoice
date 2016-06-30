@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.DaoSession;
+import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Item;
 import com.apaza.moises.notevoice.model.Media;
@@ -115,7 +118,16 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     private void saveNote(){
         Note note = getNoteOfView();
         if(note != null){
-            if(Global.getHandlerDB().getDaoSession().getNoteDao().insert(getNoteOfView()) > 0){
+            DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+            long idNote = daoSession.getNoteDao().insert(note);
+            if(idNote > 0){
+                Message message = getMessageOfView();
+                message.setIdNote(idNote);
+                daoSession.getMessageDao().insert(message);
+
+                Audio audio = getAudioOfView();
+                daoSession.getAudioDao().insert(audio);
+
                 noteAdapter.add(new Item(Item.NOTE, note));
                 Global.showMessage("Note recorded");
             }
@@ -124,14 +136,32 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     private Note getNoteOfView(){
-        String text = textNote.getText().toString();
         Note note = new Note();
         note.setCode(Utils.generateCodeUnique("note"));
-        note.setText(text.isEmpty() ? "This is a note" : text);
-        note.setPathAudio(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
+
         note.setColor(String.valueOf(Utils.colorGenerator.getRandomColor()));
-        note.setDateCreated(Utils.getCurrentDateString());
+        note.setCreateAt(Utils.getCurrentDate());
+        note.setUpdateAt(Utils.getCurrentDate());
+
         return note;
+    }
+
+    private Message getMessageOfView(){
+        String text = textNote.getText().toString();
+        Message message = new Message();
+        message.setCode(Utils.generateCodeUnique("message"));
+        message.setTextMessage(text.isEmpty() ? "This is a note" : text);
+        message.setCreateAt(Utils.getCurrentDate());
+        return message;
+    }
+
+    private Audio getAudioOfView(){
+        Audio audio = new Audio();
+        audio.setCode(Utils.generateCodeUnique("audio"));
+        audio.setRoute(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
+        audio.setDuration(0);//Media.formatDuration(Media.getDurationAudioFile(audio.getRoute()));
+        audio.setCreateAt(Utils.getCurrentDate());
+        return audio;
     }
 
 
@@ -180,11 +210,11 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         Global.showDialogConfirmation(new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Global.showMessage("Delete " + item.note.getText());
+                Global.showMessage("Delete " + item.note.getNoteMessage().get(0).getTextMessage());
                 Global.getHandlerDB().getDaoSession().getNoteDao().delete(item.note);
                 noteAdapter.remove(item);
                 noteAdapter.notifyDataSetChanged();
-                Global.getMedia().eraseAudioFromDisk(item.note.getPathAudio());
+                Global.getMedia().eraseAudioFromDisk(item.note.getNoteAudio().get(0).getRoute());
                 dialog.dismiss();
             }
         });

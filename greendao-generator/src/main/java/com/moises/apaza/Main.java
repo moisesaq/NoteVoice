@@ -60,12 +60,6 @@ public class Main {
 
     public static void main(String[] args){
         Schema schema = new Schema(1, "com.apaza.moises.notevoice.database");
-        Entity note = schema.addEntity(NOTE);
-        note.addIdProperty();
-        note.addStringProperty(ColumnsNote.CODE);
-        note.addStringProperty(ColumnsNote.COLOR);
-        note.addStringProperty(ColumnsNote.CREATE_AT);
-        note.addStringProperty(ColumnsNote.UPDATE_AT);
 
         /*-------------------TABLE ALARM--------------*/
         Entity alarm = schema.addEntity(ALARM);
@@ -75,8 +69,16 @@ public class Main {
         alarm.addStringProperty(ColumnsAlarm.REASON);
         alarm.addBooleanProperty(ColumnsAlarm.STATUS);
 
-        Property idAlarm = alarm.addLongProperty(ColumnsNote.ID_ALARM).getProperty();
-        note.addToOne(note, idAlarm);
+        /*-------------------TABLE NOTE--------------*/
+        Entity note = schema.addEntity(NOTE);
+        note.addIdProperty();
+        note.addStringProperty(ColumnsNote.CODE);
+        note.addStringProperty(ColumnsNote.COLOR);
+        note.addDateProperty(ColumnsNote.CREATE_AT);
+        note.addDateProperty(ColumnsNote.UPDATE_AT);
+
+        Property idAlarm = note.addLongProperty(ColumnsNote.ID_ALARM).getProperty();
+        note.addToOne(alarm, idAlarm); //A note have a alarm
 
         /*-------------------TABLE IMAGE--------------*/
         Entity image = schema.addEntity(IMAGE);
@@ -84,16 +86,43 @@ public class Main {
         image.addStringProperty(ColumnsImage.CODE);
         image.addStringProperty(ColumnsImage.ROUTE);
         image.addStringProperty(ColumnsImage.DESCRIPTION);
-        Property createAt = image.addDateProperty(ColumnsImage.CREATE_AT).getProperty();
+        Property createAtImage = image.addDateProperty(ColumnsImage.CREATE_AT).getProperty();
 
-        Property idNote = image.addLongProperty(ColumnsImage.ID_NOTE).getProperty();
-        image.addToOne(note, idNote);
+        Property idNoteImage = image.addLongProperty(ColumnsImage.ID_NOTE).getProperty();
+        image.addToOne(note, idNoteImage);
 
-        ToMany noteToImage = note.addToMany(image, idNote);
+        ToMany noteToImage = note.addToMany(image, idNoteImage);
         noteToImage.setName(NOTE_IMAGE);
-        noteToImage.orderDesc(createAt);
+        noteToImage.orderDesc(createAtImage);
 
         /*-------------------TABLE AUDIO--------------*/
+        Entity audio = schema.addEntity(AUDIO);
+        audio.addIdProperty();
+        audio.addStringProperty(ColumnsAudio.CODE);
+        audio.addStringProperty(ColumnsAudio.ROUTE);
+        audio.addIntProperty(ColumnsAudio.DURATION);
+        Property createAtAudio = audio.addDateProperty(ColumnsAudio.CREATE_AT).getProperty();
+
+        Property idNoteAudio = audio.addLongProperty(ColumnsAudio.ID_NOTE).getProperty();
+        audio.addToOne(audio, idNoteAudio);
+
+        ToMany noteToAudio = note.addToMany(audio, idNoteAudio);
+        noteToAudio.setName(NOTE_AUDIO);
+        noteToAudio.orderDesc(createAtAudio);
+
+        /*-------------------TABLE AUDIO--------------*/
+        Entity message = schema.addEntity(MESSAGE);
+        message.addIdProperty();
+        message.addStringProperty(ColumnsMessage.CODE);
+        message.addStringProperty(ColumnsMessage.TEXT_MESSAGE);
+        Property createAtMessage = message.addDateProperty(ColumnsMessage.CREATE_AT).getProperty();
+
+        Property idNoteMessage = message.addLongProperty(ColumnsMessage.ID_NOTE).getProperty();
+        message.addToOne(message, idNoteMessage);
+
+        ToMany noteToMessage = note.addToMany(message, idNoteMessage);
+        noteToMessage.setName(NOTE_MESSAGE);
+        noteToMessage.orderDesc(createAtMessage);
 
         try{
             DaoGenerator daoGenerator = new DaoGenerator();

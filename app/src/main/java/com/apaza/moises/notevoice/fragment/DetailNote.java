@@ -125,11 +125,11 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
         stop.setOnClickListener(this);
         seekBar = (SeekBar)view.findViewById(R.id.seekBar);
         durationAudio = (TextView)view.findViewById(R.id.durationAudio);
-        durationAudio.setText(Media.formatDuration(Media.getDurationAudioFile(note.getPathAudio())));
+        durationAudio.setText(Media.formatDuration(Media.getDurationAudioFile(note.getNoteAudio().get(0).getRoute())));
         textNote = (TextView)view.findViewById(R.id.textNote);
-        textNote.setText(note.getText());
+        textNote.setText(note.getNoteMessage().get(0).getTextMessage());
         dateNote = (TextView)view.findViewById(R.id.date);
-        dateNote.setText(note.getDateCreated());
+        dateNote.setText(note.getCreateAt().toString());
 
         timeAlarm = (TextView)view.findViewById(R.id.timeAlarm);
         timeAlarm.setOnClickListener(this);
@@ -229,7 +229,7 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
             if(Global.getMedia().isAudioPlaying()){
                 stopAudio();
             }
-            Global.getMedia().setupAudio(note.getPathAudio());
+            Global.getMedia().setupAudio(note.getNoteAudio().get(0).getRoute());
             finalTime = Global.getMedia().getAudioMaxDuration();
             startTime = Global.getMedia().getAudioCurrentPosition();
             this.seekBar.setMax(finalTime);

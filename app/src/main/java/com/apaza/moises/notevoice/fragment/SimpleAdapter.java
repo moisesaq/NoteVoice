@@ -104,8 +104,8 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
                     showMenu(holder, item);
                 }
             });
-            holder.textNote.setText(note.getText());
-            holder.dateCreated.setText(note.getDateCreated());
+            holder.textNote.setText(note.getNoteMessage().get(0).getTextMessage());
+            holder.dateCreated.setText(note.getCreateAt().toString());
         }
 
         return view;
@@ -126,13 +126,13 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
 
     public void prepareAudio(final ViewHolder holder, final Note note){
         showPlayButton(holder);
-        holder.duration.setText(Media.formatDuration(Media.getDurationAudioFile(note.getPathAudio())));
+        holder.duration.setText(Media.formatDuration(Media.getDurationAudioFile(note.getNoteAudio().get(0).getRoute())));
 
         holder.play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showStopButton(holder);
-                startAudio1(note.getPathAudio(), holder, new MediaPlayer.OnCompletionListener() {
+                startAudio1(note.getNoteAudio().get(0).getRoute(), holder, new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
                         stopAudio1();
