@@ -80,7 +80,12 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
             final Note note = item.note;
             holder.viewItem.setVisibility(View.VISIBLE);
             holder.titleSection.setVisibility(View.GONE);
-            prepareAudio(holder, item.note);
+            //String path = item.note.getNoteAudio().get(0).getRoute();
+            if(item.note.getNoteAudio().size() > 0)
+                prepareAudio(holder, item.note);
+            else
+                holder.duration.setText("Error");
+            //Log.d("AUDIO",">>>>>>" + path);
             /*holder.play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

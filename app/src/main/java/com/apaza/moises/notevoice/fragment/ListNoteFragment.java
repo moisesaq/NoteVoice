@@ -126,6 +126,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
                 daoSession.getMessageDao().insert(message);
 
                 Audio audio = getAudioOfView();
+                audio.setIdNote(idNote);
                 daoSession.getAudioDao().insert(audio);
 
                 noteAdapter.add(new Item(Item.NOTE, note));
