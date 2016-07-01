@@ -11,8 +11,10 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.apaza.moises.notevoice.MainActivity;
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.AlarmReceiver;
@@ -80,12 +83,6 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
             note = Global.getHandlerDB().getDaoSession().getNoteDao().load(idNote);
         }
 
-        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.mipmap.ic_close_white_24dp);
-        }
-
 
     }
 
@@ -112,8 +109,25 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.detail_note, container, false);
+
+        /*Toolbar toolbarDetail = (Toolbar)view.findViewById(R.id.toolbar_detail);
+        ((MainActivity)getActivity()).setToolbar(toolbarDetail);*/
+
+        CollapsingToolbarLayout collapser = (CollapsingToolbarLayout)view.findViewById(R.id.collapse);
+        collapser.setTitle("Hello note"); // Cambiar título
+
+        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.mipmap.ic_close_white_24dp);
+        }
         setupView();
         return view;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
     }
 
     private void setupView(){
