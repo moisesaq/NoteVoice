@@ -92,6 +92,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void setupView(){
+
         textNote = (EditText)view.findViewById(R.id.textNote);
         recorder = (ImageButton)view.findViewById(R.id.recorder);
         recorder.setOnTouchListener(this);
