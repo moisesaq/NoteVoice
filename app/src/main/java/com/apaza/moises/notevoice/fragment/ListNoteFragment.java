@@ -289,8 +289,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void startAnimationRecord(View view) {
-        ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.0f, 1.5f);
-        ObjectAnimator anim2 = ObjectAnimator.ofFloat(view, "scaleY", 1.0f, 1.5f);
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.0f, 1.7f);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(view, "scaleY", 1.0f, 1.7f);
         //ObjectAnimator animColor = ObjectAnimator.ofObject(view, "backgroundColor", new ArgbEvaluator(), Color.parseColor("#FF0000"), Color.parseColor("#8B0000"));
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -298,6 +298,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
         animatorSet.addListener(new CustomAnimationListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                recordingTime.setVisibility(View.VISIBLE);
                 expanseText(recordingTime);
             }
         });
@@ -306,20 +307,25 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void expanseText(View view1){
-        ObjectAnimator anim = ObjectAnimator.ofFloat(view1, "X", view1.getLeft());
+        ObjectAnimator anim = ObjectAnimator.ofFloat(view1, "X", view1.getWidth()+10);
         anim.setDuration(200);
         anim.setInterpolator(new BounceInterpolator());
         anim.addListener(new CustomAnimationListener(){
             @Override
             public void onAnimationEnd(Animator animation) {
-                startTime();
+                Global.getMedia().startAudioPlaying(R.raw.pip_pip, new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        startTime();
+                    }
+                });
             }
         });
         anim.start();
     }
 
     public void collapseText(View view1){
-        ObjectAnimator anim = ObjectAnimator.ofFloat(view1, "X", view1.getRight());
+        ObjectAnimator anim = ObjectAnimator.ofFloat(view1, "X", recorder.getLeft());
         anim.setDuration(200);
         anim.addListener(new CustomAnimationListener(){
 
@@ -329,6 +335,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
             }
             @Override
             public void onAnimationEnd(Animator animation) {
+                recordingTime.setVisibility(View.INVISIBLE);
                 endAnimationRecord(recorder);
             }
         });
@@ -337,8 +344,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     }
 
     public void endAnimationRecord(View view) {
-        ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.5f, 1.0f);
-        ObjectAnimator anim2 = ObjectAnimator.ofFloat(view, "scaleY", 1.5f, 1.0f);
+        ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.7f, 1.0f);
+        ObjectAnimator anim2 = ObjectAnimator.ofFloat(view, "scaleY", 1.7f, 1.0f);
         //ObjectAnimator animColor = ObjectAnimator.ofObject(view, "backgroundColor", new ArgbEvaluator(),Color.parseColor("#8B0000"), Color.parseColor("#FF0000"));
 
         AnimatorSet animatorSet = new AnimatorSet();
@@ -416,13 +423,13 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
                 ));
                 recordHandler.postDelayed(recordRunnable, 1000);
             }
-        }, 1000);
+        }, 0);
     }
 
     private void stopTime(){
         count = 0;
         recordHandler.removeCallbacks(recordRunnable);
-        recordingTime.setText("0");
+        recordingTime.setText("00:00");
     }
 
     protected void stopMaxLengthTimer() {

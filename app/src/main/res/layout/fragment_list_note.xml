@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:background="@color/green_light">
 
-        <!--android:background="@drawable/background_recorder"-->
+
 
         <TextView
             android:id="@+id/recordingTime"
@@ -25,7 +25,8 @@
             android:paddingBottom="@dimen/paddingMinGlobal"
             android:paddingLeft="@dimen/paddingMinGlobal"
             android:paddingRight="@dimen/paddingMaxGlobal"
-            android:background="@drawable/recording_time"/>
+            android:background="@drawable/recording_time"
+            android:visibility="invisible"/>
 
         <ImageButton
             android:id="@+id/recorder"
@@ -33,7 +34,8 @@
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_microphone_settings_white_24dp"
             android:padding="@dimen/paddingMaxGlobal"
-            android:layout_gravity="right|center_vertical"/>
+            android:background="@drawable/background_recorder"
+            android:layout_gravity="center"/>
 
     </FrameLayout>
 
