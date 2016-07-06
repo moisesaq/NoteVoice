@@ -28,5 +28,9 @@ dependencies {
     //GreenDAO
     compile 'de.greenrobot:greendao:2.1.0'
 
+    //TextView drawable
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+
+    //Easy animation
+    /*compile 'com.github.2359media:EasyAndroidAnimations:0.8'*/
 }

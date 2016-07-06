@@ -118,6 +118,7 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
 
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if(actionBar != null){
+            //actionBar.hide();
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.mipmap.ic_close_white_24dp);
         }

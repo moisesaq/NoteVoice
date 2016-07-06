@@ -9,4 +9,6 @@
     <color name="orange_light">#ffffbb33</color>
     <color name="blue_light">#ff33b5e5</color>
 
+    <color name="red">#FF0000</color>
+    <color name="darkRed">#8B0000</color>
 </resources>
