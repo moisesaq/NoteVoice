@@ -6,56 +6,33 @@
     tools:context=".fragment.ListNoteFragment">
 
     <FrameLayout
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:background="@color/green_light">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/paddingMediumGlobal"
+            android:layout_marginRight="100dp"
+            android:layout_gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/textNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write here your note"/>
+
+        </android.support.design.widget.TextInputLayout>
 
 
-
-        <TextView
-            android:id="@+id/recordingTime"
+        <com.apaza.moises.notevoice.view.RecordButton
+            android:id="@+id/recordAudio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="00:00"
-            android:textColor="@android:color/white"
-            android:layout_gravity="center"
-            android:paddingTop="@dimen/paddingMinGlobal"
-            android:paddingBottom="@dimen/paddingMinGlobal"
-            android:paddingLeft="@dimen/paddingMinGlobal"
-            android:paddingRight="@dimen/paddingMaxGlobal"
-            android:background="@drawable/recording_time"
-            android:visibility="invisible"/>
-
-        <ImageButton
-            android:id="@+id/recorder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_microphone_settings_white_24dp"
-            android:padding="@dimen/paddingMaxGlobal"
-            android:background="@drawable/background_recorder"
-            android:layout_gravity="center"/>
+            android:layout_gravity="right"/>
 
     </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/paddingMediumGlobal"
-        android:gravity="center_vertical">
-
-        <EditText
-            android:id="@+id/textNote"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2" />
-
-
-
-
-    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

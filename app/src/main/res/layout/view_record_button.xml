@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="150dp"
+    android:layout_height="100dp"
+    android:background="@android:color/transparent">
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="00:00"
+        android:textColor="@android:color/white"
+        android:paddingTop="@dimen/paddingMinGlobal"
+        android:paddingBottom="@dimen/paddingMinGlobal"
+        android:paddingLeft="@dimen/paddingMinGlobal"
+        android:paddingRight="@dimen/paddingMaxGlobal"
+        android:background="@drawable/recording_time"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center_vertical|right"
+        android:visibility="invisible"/>
+
+    <ImageButton
+        android:id="@+id/record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_microphone_settings_white_24dp"
+        android:padding="@dimen/paddingMaxGlobal"
+        android:background="@drawable/background_recorder"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center_vertical|right"/>
+
+</FrameLayout>
