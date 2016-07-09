@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,8 +39,11 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     public static final String TAG = "NOTE_VOICE_LIST_FRAGMENT";
 
     private View view;
+    private ViewPager viewPagerAction;
+
     private RecyclerView listNoteVoice;
     private NoteVoiceListAdapter adapter;
+
     private TextView textNote, message;
     private RecordButton recordAudio;
     private LinearLayout viewMessage;
@@ -71,9 +77,11 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     }
 
     private void setupView(){
-        textNote = (EditText)view.findViewById(R.id.textNote);
-        recordAudio = (RecordButton) view.findViewById(R.id.recordAudio);
-        recordAudio.setOnRecordButtonListener(this);
+        /*textNote = (EditText)view.findViewById(R.id.textNote);
+        */
+
+        viewPagerAction = (ViewPager)view.findViewById(R.id.viewPagerAction);
+        viewPagerAction.setAdapter(new ActionPageAdapter());
 
         viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
         loading = (ProgressBar)view.findViewById(R.id.loading);
@@ -266,5 +274,56 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    public class ActionPageAdapter extends PagerAdapter{
+
+        LinearLayout page, pageAudio, pageText, pageImage;
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            switch (position){
+                case 0:
+                    if(pageAudio == null)
+                        pageAudio = (LinearLayout)LayoutInflater.from(container.getContext()).inflate(R.layout.page_audio_note, null, false);
+                    page = pageAudio;
+                    setupRecordButton();
+                    break;
+
+                case 1:
+                    if(pageText == null)
+                        pageText = (LinearLayout)LayoutInflater.from(container.getContext()).inflate(R.layout.page_text_note, null, false);
+                    page = pageText;
+                    break;
+
+                case 2:
+                    if(pageImage == null)
+                        pageImage = (LinearLayout)LayoutInflater.from(container.getContext()).inflate(R.layout.page_image_note, null, false);
+                    page = pageImage;
+                    break;
+            }
+            container.addView(page);
+            return page;//super.instantiateItem(container, position);
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((LinearLayout)object);
+        }
+
+        public void setupRecordButton(){
+            recordAudio = (RecordButton) pageAudio.findViewById(R.id.recordAudio);
+            recordAudio.setOnRecordButtonListener(NoteVoiceListFragment.this);
+        }
     }
 }

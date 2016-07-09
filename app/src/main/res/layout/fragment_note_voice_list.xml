@@ -5,7 +5,7 @@
     android:orientation="vertical"
     tools:context=".fragment.ListNoteFragment">
 
-    <FrameLayout
+    <!--<FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -32,7 +32,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"/>
 
-    </FrameLayout>
+    </FrameLayout>-->
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPagerAction"
+        android:layout_width="match_parent"
+        android:background="@color/grayMoises"
+        android:layout_height="100dp">
+
+    </android.support.v4.view.ViewPager>
 
     <FrameLayout
         android:layout_width="match_parent"

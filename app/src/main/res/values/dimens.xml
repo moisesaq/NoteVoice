@@ -12,4 +12,6 @@
     <dimen name="marginMediumGlobal">16dp</dimen>
     <dimen name="marginMaxGlobal">24dp</dimen>
 
+    <dimen name="heightViewPagerAction">100dp</dimen>
+
 </resources>

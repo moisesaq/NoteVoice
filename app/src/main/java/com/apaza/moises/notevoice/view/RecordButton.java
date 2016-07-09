@@ -69,11 +69,13 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                startAnimationRecord(record);
+                if(onRecordButtonListener != null)
+                    startAnimationRecord(record);
                 break;
 
             case MotionEvent.ACTION_UP:
-                collapseText(time);
+                if(onRecordButtonListener != null)
+                    collapseText(time);
 
                 break;
 
