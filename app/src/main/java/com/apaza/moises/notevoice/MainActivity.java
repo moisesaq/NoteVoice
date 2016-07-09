@@ -1,10 +1,10 @@
 package com.apaza.moises.notevoice;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -13,9 +13,10 @@ import android.view.MenuItem;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.fragment.DetailNote;
 import com.apaza.moises.notevoice.fragment.ListNoteFragment;
+import com.apaza.moises.notevoice.fragment.NoteVoiceListFragment;
 import com.apaza.moises.notevoice.global.Global;
 
-public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnListNoteFragmentListener {
+public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnListNoteFragmentListener, NoteVoiceListFragment.OnNoteVoiceListFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +27,8 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setToolbar(toolbar);
         //setSupportActionBar(toolbar);
-        showFragment(ListNoteFragment.newInstance(""));
-
+        //showFragment(ListNoteFragment.newInstance(""));
+        showFragment(NoteVoiceListFragment.newInstance());
     }
 
     public void setToolbar(Toolbar toolbar){
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
     }
 
     private void showFragment(Fragment fragment){
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.addToBackStack(fragment.getClass().getName());
@@ -68,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
 
     @Override
     public void onBackPressed(){
-        if(getFragmentManager().getBackStackEntryCount() > 1)
-            getFragmentManager().popBackStack();
+        if(getSupportFragmentManager().getBackStackEntryCount() > 1)
+            getSupportFragmentManager().popBackStack();
         else
             finish();
     }
@@ -86,4 +87,8 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
             });*/
     }
 
+    @Override
+    public void onEditNoteVoiceClick(Note note) {
+        showFragment(DetailNote.newInstance(note.getId()));
+    }
 }

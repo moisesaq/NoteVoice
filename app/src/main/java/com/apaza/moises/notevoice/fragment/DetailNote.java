@@ -2,7 +2,6 @@ package com.apaza.moises.notevoice.fragment;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.DialogFragment;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -12,9 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.apaza.moises.notevoice.MainActivity;
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.AlarmReceiver;
@@ -41,8 +39,6 @@ import com.apaza.moises.notevoice.model.Media;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-
 public class DetailNote extends DialogFragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
     private View view;
 

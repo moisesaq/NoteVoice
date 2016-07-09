@@ -1,4 +1,4 @@
-package com.apaza.moises.notevoice.fragment;
+package com.apaza.moises.notevoice.adapter;
 
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -47,9 +47,9 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
         this.listener = listener;
     }
 
-    protected void prepareSections(int sectionsNumber) { }
+    public void prepareSections(int sectionsNumber) { }
 
-    protected void onSectionAdded(Item section, int sectionPosition) { }
+    public void onSectionAdded(Item section, int sectionPosition) { }
 
     @Override public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;

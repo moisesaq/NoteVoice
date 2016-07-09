@@ -8,4 +8,8 @@
     <dimen name="paddingMediumGlobal">10dp</dimen>
     <dimen name="paddingMaxGlobal">15dp</dimen>
 
+    <dimen name="marginMinGlobal">8dp</dimen>
+    <dimen name="marginMediumGlobal">16dp</dimen>
+    <dimen name="marginMaxGlobal">24dp</dimen>
+
 </resources>

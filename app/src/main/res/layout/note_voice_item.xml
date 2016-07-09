@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="4dp"
+    card_view:cardUseCompatPadding="true"
+    android:background="@color/grayMoises"
+    android:layout_marginLeft="@dimen/marginMediumGlobal"
+    android:layout_marginRight="@dimen/marginMediumGlobal"
+    android:layout_marginTop="@dimen/marginMinGlobal"
+    android:layout_marginBottom="@dimen/marginMinGlobal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.apaza.moises.notevoice.view.AudioPlayView
+            android:id="@+id/audioPlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/paddingMinGlobal">
+
+            <TextView
+                style="@style/TextViewMoisesSmall"
+                android:text="Text Note"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/textNote"
+                style="@style/TextViewMoisesMedium"
+                android:text="This is a text note, write more text here please"
+                android:textStyle="normal"
+                android:textColor="@color/grayMoises"/>
+        </LinearLayout>
+
+        <!--OPTIONS-->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/paddingMediumGlobal">
+
+            <TextView
+                android:id="@+id/date"
+                style="@style/TextViewMoisesSmall"
+                android:layout_gravity="left|center_vertical"
+                android:text="Sunday, 22 of april 2016"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="right">
+
+                <ImageButton
+                    android:id="@+id/delete"
+                    style="@style/ImageButtonMoises"
+                    android:src="@mipmap/ic_delete_grey600_24dp"/>
+
+                <ImageButton
+                    android:id="@+id/edit"
+                    style="@style/ImageButtonMoises"
+                    android:src="@mipmap/ic_pencil_grey600_24dp"
+                    android:layout_marginLeft="@dimen/marginMinGlobal"/>
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

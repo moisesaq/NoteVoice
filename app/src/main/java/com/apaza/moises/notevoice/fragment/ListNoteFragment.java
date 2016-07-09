@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.apaza.moises.notevoice.adapter.SimpleAdapter;
 import com.apaza.moises.notevoice.database.Audio;
 import com.apaza.moises.notevoice.database.DaoSession;
 import com.apaza.moises.notevoice.database.Message;
@@ -103,7 +104,7 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.recordAudio:
-                saveNote();
+                //saveNote();
                 break;
         }
     }
@@ -284,6 +285,8 @@ public class ListNoteFragment extends Fragment implements View.OnClickListener, 
             } else {
                 //Here
             }
+
+
         }
     }
 

@@ -11,4 +11,6 @@
 
     <color name="red">#FF0000</color>
     <color name="darkRed">#8B0000</color>
+    <color name="grayMoises">#B6B6B6</color>
+    <color name="grayLight">#D3D3D3</color>
 </resources>

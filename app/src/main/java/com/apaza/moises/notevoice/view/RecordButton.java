@@ -7,6 +7,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
+    public static final String TAG = "RADIO_BUTTON";
+
     private TextView time;
     private ImageButton record;
 
@@ -31,6 +34,7 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
     private Runnable timeRunnable;
 
     private long count = 0;
+    private boolean isCanceled = false;
 
     private OnRecordButtonListener onRecordButtonListener;
 
@@ -74,7 +78,7 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
                 break;
 
             case MotionEvent.ACTION_CANCEL:
-                collapseText(time);
+                //collapseText(time);
                 break;
         }
         return false;
@@ -90,12 +94,8 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         animatorSet.addListener(new CustomAnimationListener() {
 
             @Override
-            public void onAnimationCancel(Animator animation) {
-                onRecordButtonListener.onCancelRecord();
-            }
-
-            @Override
             public void onAnimationEnd(Animator animation) {
+                Log.i(TAG, " >>> END START ANIMATED RECORD BUTTON");
                 time.setVisibility(View.VISIBLE);
                 expanseText(time);
             }
@@ -111,19 +111,17 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         anim.addListener(new CustomAnimationListener(){
 
             @Override
-            public void onAnimationCancel(Animator animation) {
-                onRecordButtonListener.onCancelRecord();
-                stopTime();
-            }
-
-            @Override
             public void onAnimationEnd(Animator animation) {
+                Log.d(TAG, " >>> END EXPANSE TEXT VIEW TIME");
+                /*startTime();
+                onRecordButtonListener.onStartRecord();*/
                 Global.getMedia().startAudioPlaying(R.raw.pip_pip, new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        
-                        startTime();
-                        onRecordButtonListener.onStartRecord();
+                        if(!isCanceled){
+                            startTime();
+                            onRecordButtonListener.onStartRecord();
+                        }
                     }
                 });
             }
@@ -138,30 +136,15 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         anim.addListener(new CustomAnimationListener(){
 
             @Override
-            public void onAnimationCancel(Animator animation) {
-                endAnimationRecord(record);
-                stopTime();
-            }
-
-            @Override
             public void onAnimationEnd(Animator animation) {
-                /*if(count > 1)
-                    onRecordButtonListener.onEndRecord(count);
-                else
-                    onRecordButtonListener.onCancelRecord();*/
-
+                Log.d(TAG, " >>> END COLLAPSE TEXT VIEW TIME");
                 endAnimationRecord(record);
             }
         });
         anim.start();
     }
 
-    /*Handler recordMissingEndingHandler = new Handler();
-                recordMissingEndingHandler.postDelayed(new Runnable() {
-                    public void run() {
-                        stopRecording();
-                    }
-                }, Media.RECORD_MISSING_ENDING_FIX_INTERVAL);*/
+
 
     public void endAnimationRecord(View view) {
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.7f, 1.0f);
@@ -174,10 +157,15 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         animatorSet.addListener(new CustomAnimationListener(){
             @Override
             public void onAnimationEnd(Animator animation) {
+                Log.d(TAG, " >>> END END ANIMATED RECORD BUTTON");
                 if(count > 1)
                     onRecordButtonListener.onEndRecord(count);
-                else
+                else{
                     onRecordButtonListener.onCancelRecord();
+                    isCanceled = true;
+                    Global.getMedia().stopAudio();
+                }
+
                 time.setVisibility(View.INVISIBLE);
                 stopTime();
             }
@@ -191,11 +179,6 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
             @Override
             public void run() {
                 count++;
-                //recordingTime.setText(String.valueOf(count));
-                /*recordingTime.setText(String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(count*1000),
-                        TimeUnit.MILLISECONDS.toSeconds(count*1000) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(count*1000))
-                ));*/
                 time.setText(String.format("%02d:%02d",
                         TimeUnit.MILLISECONDS.toMinutes(count*1000),
                         TimeUnit.MILLISECONDS.toSeconds(count*1000) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(count*1000))
@@ -207,7 +190,21 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
     private void stopTime(){
         count = 0;
+        isCanceled = false;
         timeHandler.removeCallbacks(timeRunnable);
         time.setText("00:00");
     }
+
+    //recordingTime.setText(String.valueOf(count));
+                /*recordingTime.setText(String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(count*1000),
+                        TimeUnit.MILLISECONDS.toSeconds(count*1000) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(count*1000))
+                ));*/
+
+    /*Handler recordMissingEndingHandler = new Handler();
+                recordMissingEndingHandler.postDelayed(new Runnable() {
+                    public void run() {
+                        stopRecording();
+                    }
+                }, Media.RECORD_MISSING_ENDING_FIX_INTERVAL);*/
 }
