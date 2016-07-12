@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:padding="@dimen/paddingMaxGlobal">
 
     <FrameLayout
@@ -20,13 +20,21 @@
             android:src="@mipmap/ic_stop_circle_outline_white_24dp"
             android:visibility="gone"/>
 
+        <ImageButton
+            android:id="@+id/error"
+            style="@style/ImageButtonCircleMoises"
+            android:src="@mipmap/ic_alert_white_24dp"
+            android:visibility="gone"/>
+
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginLeft="@dimen/marginMinGlobal"
+        android:layout_gravity="center_vertical">
 
         <SeekBar
             android:id="@+id/progress"
@@ -37,6 +45,7 @@
         <TextView
             android:id="@+id/duration"
             style="@style/TextViewMoisesSmall"
+            android:textColor="@color/grayMoises"
             android:layout_gravity="right"
             android:text="02:12"/>
 

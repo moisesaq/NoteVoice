@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,7 +35,9 @@ import com.apaza.moises.notevoice.view.RecordButton;
 
 import java.util.List;
 
-public class NoteVoiceListFragment extends BaseFragment implements RecordButton.OnRecordButtonListener, NoteVoiceListAdapter.OnNoteVoiceListAdapterListener{
+import me.relex.circleindicator.CircleIndicator;
+
+public class NoteVoiceListFragment extends BaseFragment implements RecordButton.OnRecordButtonListener, NoteVoiceListAdapter.OnNoteVoiceListAdapterListener, View.OnClickListener{
 
     public static final String TAG = "NOTE_VOICE_LIST_FRAGMENT";
 
@@ -44,11 +47,13 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     private RecyclerView listNoteVoice;
     private NoteVoiceListAdapter adapter;
 
-    private TextView textNote, message;
+    private TextView message;
     private RecordButton recordAudio;
+    private EditText textNote;
+    private ImageButton saveTextNote, selectImage;
+
     private LinearLayout viewMessage;
     private ProgressBar loading;
-
     private ActionBar actionBar;
 
     private String outputFilename;
@@ -82,6 +87,9 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
 
         viewPagerAction = (ViewPager)view.findViewById(R.id.viewPagerAction);
         viewPagerAction.setAdapter(new ActionPageAdapter());
+
+        CircleIndicator indicator = (CircleIndicator)view.findViewById(R.id.indicator);
+        indicator.setViewPager(viewPagerAction);
 
         viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
         loading = (ProgressBar)view.findViewById(R.id.loading);
@@ -255,6 +263,18 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         listener.onEditNoteVoiceClick(note);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.saveTextNote:
+                Global.showMessage("Save text note");
+                break;
+            case R.id.selectImage:
+                Global.showMessage("Select a image");
+                break;
+        }
+    }
+
     public interface OnNoteVoiceListFragmentListener {
         void onEditNoteVoiceClick(Note note);
     }
@@ -299,12 +319,14 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
                     if(pageText == null)
                         pageText = (LinearLayout)LayoutInflater.from(container.getContext()).inflate(R.layout.page_text_note, null, false);
                     page = pageText;
+                    setupTextNote();
                     break;
 
                 case 2:
                     if(pageImage == null)
                         pageImage = (LinearLayout)LayoutInflater.from(container.getContext()).inflate(R.layout.page_image_note, null, false);
                     page = pageImage;
+                    setupSelectImage();
                     break;
             }
             container.addView(page);
@@ -324,6 +346,17 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         public void setupRecordButton(){
             recordAudio = (RecordButton) pageAudio.findViewById(R.id.recordAudio);
             recordAudio.setOnRecordButtonListener(NoteVoiceListFragment.this);
+        }
+
+        public void setupTextNote(){
+            textNote = (EditText)pageText.findViewById(R.id.textNote);
+            saveTextNote = (ImageButton)pageText.findViewById(R.id.saveTextNote);
+            saveTextNote.setOnClickListener(NoteVoiceListFragment.this);
+        }
+
+        public void setupSelectImage(){
+            selectImage = (ImageButton)pageImage.findViewById(R.id.selectImage);
+            selectImage.setOnClickListener(NoteVoiceListFragment.this);
         }
     }
 }

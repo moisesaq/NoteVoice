@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="@dimen/heightViewPagerAction"
     android:gravity="center"
     android:layout_gravity="center"
-    android:background="@color/orange_light">
+    android:background="@color/colorPrimary">
 
     <TextView
         style="@style/TextViewMoisesSmall"
-        android:text="Capture or select a image"/>
+        android:text="Capture or select a image"
+        android:textColor="@android:color/white"/>
 
     <ImageButton
         android:id="@+id/selectImage"
         style="@style/ImageButtonCircleMoises"
-        android:src="@mipmap/ic_play_box_outline_white_24dp"
+        android:src="@mipmap/ic_camera_white_24dp"
         android:layout_margin="@dimen/marginMinGlobal"
         android:layout_gravity="center"/>
 

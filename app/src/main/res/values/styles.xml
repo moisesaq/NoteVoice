@@ -51,12 +51,13 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:padding">@dimen/paddingMediumGlobal</item>
         <item name="android:clickable">true</item>
+        <item name="android:padding">@dimen/paddingMediumGlobal</item>
         <item name="android:background">@drawable/image_button</item>
     </style>
 
     <style name="ImageButtonCircleMoises" parent="ImageButtonMoises">
+        <item name="android:padding">@dimen/paddingMaxGlobal</item>
         <item name="android:background">@drawable/image_button_circle</item>
     </style>
 

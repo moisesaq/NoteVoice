@@ -25,7 +25,7 @@ public class Utils {
     public static final String DATE_FORMAT_INPUT = "yyyy-MM-dd";
     private static final String DATE_FORMAT_INPUT_FULL = "yyyy-MM-dd HH:mm:ss";
     public static final String DATE_FORMAT_DAY = "EEEE";
-    public static final String DATE_FORMAT_CLASSIC = "dd/MM/yyyy";
+    public static final String DATE_FORMAT_CLASSIC = "EEEE, dd/MM/yyyy";
     public static final String DATE_FORMAT_TIME = "HH:mm:ss";
     public static final String DATE_FORMAT_TIME_12 = "hh:mm a";
 

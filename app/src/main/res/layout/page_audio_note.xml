@@ -5,11 +5,12 @@
     android:layout_height="@dimen/heightViewPagerAction"
     android:layout_gravity="center"
     android:gravity="center|right"
-    android:background="@color/blue_light">
+    android:background="@color/colorPrimary">
 
     <TextView
         style="@style/TextViewMoisesSmall"
-        android:text="Record a note voice"/>
+        android:text="Record a note voice"
+        android:textColor="@android:color/white"/>
 
     <com.apaza.moises.notevoice.view.RecordButton
         android:id="@+id/recordAudio"
