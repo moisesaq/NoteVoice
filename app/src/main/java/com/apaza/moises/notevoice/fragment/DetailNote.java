@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.apaza.moises.notevoice.R;
+import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.AlarmReceiver;
 import com.apaza.moises.notevoice.global.Global;
@@ -78,8 +79,6 @@ public class DetailNote extends DialogFragment implements View.OnClickListener, 
             idNote = getArguments().getLong(ID_NOTE);
             note = Global.getHandlerDB().getDaoSession().getNoteDao().load(idNote);
         }
-
-
     }
 
     @Override

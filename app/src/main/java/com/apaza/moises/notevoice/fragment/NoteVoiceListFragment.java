@@ -228,6 +228,8 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         }
     }
 
+
+    /*RECORD BUTTON LISTENER*/
     @Override
     public void onStartRecord() {
         Global.showMessage("Start record");
@@ -243,6 +245,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         Global.showMessage("Cancel record");
     }
 
+    /*NOTE VOICE LIST ADAPTER LISTENER*/
     @Override
     public void onDeleteClick(final Note note) {
         Global.showDialogConfirmation(new DialogInterface.OnClickListener() {

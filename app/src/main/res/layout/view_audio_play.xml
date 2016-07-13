@@ -49,6 +49,15 @@
             android:layout_gravity="right"
             android:text="02:12"/>
 
+
+
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/share"
+        style="@style/ImageButtonCircleMoises"
+        android:src="@mipmap/ic_share_grey600_24dp"
+        android:visibility="gone"
+        android:layout_marginLeft="@dimen/marginMinGlobal"/>
 
 </LinearLayout>
