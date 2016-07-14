@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/paddingMediumGlobal">
 
+    <!--THIS NO USE-->
     <LinearLayout
         android:id="@+id/viewItem"
         android:layout_width="match_parent"

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.fragment.DetailNote;
+import com.apaza.moises.notevoice.fragment.DetailNoteFragment;
 import com.apaza.moises.notevoice.fragment.ListNoteFragment;
 import com.apaza.moises.notevoice.fragment.NoteVoiceListFragment;
 import com.apaza.moises.notevoice.global.Global;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
 
     @Override
     public void onEditNoteVoiceClick(Note note) {
-        showFragment(DetailNote.newInstance(note.getId()));
+        //showFragment(DetailNote.newInstance(note.getId()));
+        showFragment(DetailNoteFragment.newInstance(note.getId()));
     }
 }

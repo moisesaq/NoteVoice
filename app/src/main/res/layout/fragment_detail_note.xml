@@ -40,6 +40,7 @@
                     android:visibility="gone"/>
 
                 <LinearLayout
+                    android:id="@+id/emptyAudio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -97,6 +98,7 @@
                     android:visibility="gone"/>
 
                 <TextView
+                    android:id="@+id/emptyText"
                     style="@style/TextViewMoisesSmall"
                     android:layout_gravity="center"
                     android:padding="@dimen/paddingMediumGlobal"
@@ -119,7 +121,7 @@
                     android:layout_gravity="center_vertical">
 
                     <EditText
-                        android:id="@+id/textNote"
+                        android:id="@+id/inputTextNote"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Write here"
@@ -181,13 +183,13 @@
                     <ImageButton
                         android:id="@+id/previous"
                         style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_close_white_24dp"
+                        android:src="@mipmap/ic_arrow_left_grey600_24dp"
                         android:layout_gravity="left|center_vertical"/>
 
                     <ImageButton
                         android:id="@+id/next"
                         style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_close_white_24dp"
+                        android:src="@mipmap/ic_arrow_right_grey600_24dp"
                         android:layout_gravity="right|center_vertical"/>
 
                     <me.relex.circleindicator.CircleIndicator

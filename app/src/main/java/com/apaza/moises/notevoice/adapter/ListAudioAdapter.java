@@ -1,30 +1,25 @@
 package com.apaza.moises.notevoice.adapter;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
 
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Audio;
-import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
-import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.AudioPlayView;
-import com.apaza.moises.notevoice.view.TextNoteView;
 
 import java.util.List;
 
+public class ListAudioAdapter extends ArrayAdapter<Audio> {
 
-public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdapter.ViewHolder>{
-
-    private List<Note> listNote;
-    private OnNoteVoiceListAdapterListener onNoteVoiceListAdapterListener;
+    private Context context;
+    private List<Audio> audioList;
 
     private AudioPlayView lastAudioPlayView;
 
@@ -32,77 +27,42 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
     private int finalTime = 0;
     private Handler handler = new Handler();
 
-    public interface OnNoteVoiceListAdapterListener{
-        void onDeleteClick(Note note);
-        void onEditClick(Note note);
+    public ListAudioAdapter(Context context, List<Audio> audioList){
+        super(context, R.layout.list_audio_item, audioList);
+        this.context = context;
+        this.audioList = audioList;
     }
 
-    public NoteVoiceListAdapter(List<Note> listNote){
-        this.listNote = listNote;
-    }
-
-
-    public void setOnNoteVoiceListAdapterListener(OnNoteVoiceListAdapterListener listener){
-        this.onNoteVoiceListAdapterListener = listener;
+    public static class ViewHolder{
+        AudioPlayView audioPlayView;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_voice_item, parent, false);
-        return new ViewHolder(view);
+    public int getCount() {
+        return super.getCount();
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Note note = listNote.get(position);
-        if(note.getNoteAudio().size() > 0){
-            prepareAudio(holder.audioPlay, note.getNoteAudio().get(0));
+    public Audio getItem(int position) {
+        return super.getItem(position);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+        ViewHolder holder;
+        if(view == null){
+            holder = new ViewHolder();
+            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.list_audio_item, null);
+            holder.audioPlayView = (AudioPlayView)view.findViewById(R.id.audioPlay);
+            view.setTag(holder);
         }else{
-            holder.audioPlay.setVisibility(View.GONE);
+            holder = (ViewHolder)view.getTag();
         }
-
-        if(note.getNoteMessage().size() > 0)
-            holder.textNote.setTextNote(note.getNoteMessage().get(0).getTextMessage());
-        else
-            holder.textNote.setVisibility(View.GONE);
-        holder.date.setText(Utils.getTimeCustom(note.getCreateAt()));
-    }
-
-    @Override
-    public int getItemCount() {
-        return listNote.size();
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
-        public AudioPlayView audioPlay;
-        public TextNoteView textNote;
-        public TextView date;
-        public ImageButton delete, edit;
-
-        public ViewHolder(View view){
-            super(view);
-            audioPlay = (AudioPlayView)view.findViewById(R.id.audioPlay);
-            textNote = (TextNoteView) view.findViewById(R.id.textNote);
-            date = (TextView)view.findViewById(R.id.date);
-            delete = (ImageButton)view.findViewById(R.id.delete);
-            delete.setOnClickListener(this);
-            edit = (ImageButton)view.findViewById(R.id.edit);
-            edit.setOnClickListener(this);
-        }
-
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.delete:
-                    onNoteVoiceListAdapterListener.onDeleteClick(listNote.get(getAdapterPosition()));
-                    break;
-                case R.id.edit:
-                    onNoteVoiceListAdapterListener.onEditClick(listNote.get(getAdapterPosition()));
-                    break;
-            }
-        }
+        Audio audio = getItem(position);
+        prepareAudio(holder.audioPlayView, audio);
+        return view;
     }
 
     public void prepareAudio(final AudioPlayView audioPlayView, final Audio audio){

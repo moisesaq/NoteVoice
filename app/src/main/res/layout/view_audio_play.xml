@@ -55,8 +55,8 @@
 
     <ImageButton
         android:id="@+id/share"
-        style="@style/ImageButtonCircleMoises"
-        android:src="@mipmap/ic_share_grey600_24dp"
+        style="@style/ImageButtonMoises"
+        android:src="@mipmap/ic_share_variant_grey600_24dp"
         android:visibility="gone"
         android:layout_marginLeft="@dimen/marginMinGlobal"/>
 

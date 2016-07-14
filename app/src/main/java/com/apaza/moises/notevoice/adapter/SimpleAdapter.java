@@ -29,6 +29,7 @@ import java.lang.reflect.Field;
 
 public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionListView.PinnedSectionListAdapter{
 
+    /*THIS IS DEPRECATED, NO USE. USE LIST AUDIO ADAPTER OR NOTE VOICE LIST ADAPTER*/
     private Context context;
     LayoutInflater inflater;
     private final int[] COLORS = new int[] {R.color.green_light, R.color.orange_light, R.color.blue_light, R.color.red_light };
@@ -51,7 +52,8 @@ public class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionLi
 
     public void onSectionAdded(Item section, int sectionPosition) { }
 
-    @Override public View getView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         final ViewHolder holder;
         if(view == null){

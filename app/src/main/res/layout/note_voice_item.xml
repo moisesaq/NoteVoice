@@ -34,19 +34,17 @@
                 android:text="Text Note"
                 android:textStyle="bold"/>
 
-            <TextView
+            <com.apaza.moises.notevoice.view.TextNoteView
                 android:id="@+id/textNote"
-                style="@style/TextViewMoisesMedium"
-                android:text="This is a text note, write more text here please"
-                android:textStyle="normal"
-                android:textColor="@color/grayMoises"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <!--OPTIONS-->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/paddingMediumGlobal">
+            android:padding="@dimen/paddingMinGlobal">
 
             <TextView
                 android:id="@+id/date"
