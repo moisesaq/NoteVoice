@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -82,9 +81,6 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     }
 
     private void setupView(){
-        /*textNote = (EditText)view.findViewById(R.id.textNote);
-        */
-
         viewPagerAction = (ViewPager)view.findViewById(R.id.viewPagerAction);
         viewPagerAction.setAdapter(new ActionPageAdapter());
 
@@ -108,6 +104,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             listNoteVoice.setLayoutManager(linearLayoutManager);
             adapter = new NoteVoiceListAdapter(list);
+            adapter.sortDesc();
             adapter.setOnNoteVoiceListAdapterListener(this);
             listNoteVoice.setAdapter(adapter);
         }else{
@@ -117,36 +114,57 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         }
     }
 
-    /*@Override
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.recordAudio:
-                //saveNote();
+            case R.id.saveTextNote:
+                //Global.showMessage("Save text note");
+                if(textNote.getText().length() > 0)
+                    saveTextNote();
+                break;
+            case R.id.selectImage:
+                Global.showMessage("Select a image");
                 break;
         }
-    }*/
+    }
 
-    private void saveNote(){
-        Note note = getNoteOfView();
+    private void saveAudioNote(){
+        Note note = getNewNote();
+        if(note != null){
+            DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+            long idNote = daoSession.getNoteDao().insert(note);
+            if(idNote > 0){
+                Audio audio = getAudioOfView();
+                audio.setIdNote(idNote);
+                long idAudio = daoSession.getAudioDao().insert(audio);
+                if(idAudio > 0)
+                    Global.showMessage("Note recorded");
+            }
+        }
+    }
+
+    private void saveTextNote(){
+        Note note = getNewNote();
         if(note != null){
             DaoSession daoSession = Global.getHandlerDB().getDaoSession();
             long idNote = daoSession.getNoteDao().insert(note);
             if(idNote > 0){
                 Message message = getMessageOfView();
                 message.setIdNote(idNote);
-                daoSession.getMessageDao().insert(message);
+                long idMessage = daoSession.getMessageDao().insert(message);
+                if(idMessage > 0){
+                    textNote.getText().clear();
+                    Global.showMessage("Text note saved");
 
-                Audio audio = getAudioOfView();
-                audio.setIdNote(idNote);
-                daoSession.getAudioDao().insert(audio);
+                    adapter.addItem(note);
+                    adapter.sortDesc();
+                }
 
-                Global.showMessage("Note recorded");
             }
         }
-
     }
 
-    private Note getNoteOfView(){
+    private Note getNewNote(){
         Note note = new Note();
         note.setCode(Utils.generateCodeUnique("note"));
 
@@ -182,62 +200,27 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
             actionBar.setDisplayHomeAsUpEnabled(false);
     }
 
-    protected void startRecording() {
-        Global.getMedia().startAudioPlaying(R.raw.prip, new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                outputFilename = Media.generateOutputFilename();
-                Log.d("FILE NAME ", " FIRST >>> " + Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
-                Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
-                //startMaxLengthTimer();
-            }
-        });
-    }
-
-    protected void startMaxLengthTimer() {
-        stopMaxLengthTimer();
-        recordHandler.postDelayed(
-                recordRunnable = new Runnable() {
-                    public void run() {
-                        stopRecording();
-                    }
-                }, Media.RECORD_MAX_LENGTH_INTERVAL);
-    }
-
-    protected void stopMaxLengthTimer() {
-        recordHandler.removeCallbacks(recordRunnable);
-    }
-
-    protected void stopRecording() {
-        if (Global.getMedia().isRecording()) {
-            //stopMaxLengthTimer();
-            Global.getMedia().stopAudioRecording();
-
-            // Recorded more than a half second?
-            if (Global.getMedia().getAudioLength(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename) > 500) {
-                if (!outputFilename.equals("")){
-                    //Log.d("FILE NAME ", " >>>>>>>>>>> EMPTY");
-                    saveNote();
-                }else{
-                    Log.d("ERROR FILE NAME ", Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
-                }
-            } else {
-                //Here
-            }
-        }
-    }
-
-
     /*RECORD BUTTON LISTENER*/
     @Override
     public void onStartRecord() {
         Global.showMessage("Start record");
+        outputFilename = Media.generateOutputFilename();
+        Log.d("FILE NAME ", " FIRST >>> " + Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+        Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
     }
 
     @Override
     public void onEndRecord(long second) {
         Global.showMessage("End record");
+        if (Global.getMedia().isRecording()) {
+            Global.getMedia().stopAudioRecording();
+
+            if (!outputFilename.isEmpty()){
+                saveAudioNote();
+            }else{
+                Log.d("ERROR FILE NAME ", Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
+            }
+        }
     }
 
     @Override
@@ -248,34 +231,27 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     /*NOTE VOICE LIST ADAPTER LISTENER*/
     @Override
     public void onDeleteClick(final Note note) {
-        Global.showDialogConfirmation(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Global.showMessage("Delete " + note.getNoteMessage().get(0).getTextMessage());
-                Global.getHandlerDB().getDaoSession().getNoteDao().delete(note);
-                /*noteAdapter.remove(item);
-                noteAdapter.notifyDataSetChanged();*/
-                Global.getMedia().eraseAudioFromDisk(note.getNoteAudio().get(0).getRoute());
-                dialog.dismiss();
-            }
-        });
+        try{
+            Global.showDialogConfirmation(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Global.showMessage("Delete " + note.getNoteMessage().get(0).getTextMessage());
+                    Global.getHandlerDB().getDaoSession().getNoteDao().delete(note);
+                    adapter.removeItem(note);
+                    if(note.getNoteAudio() != null && note.getNoteAudio().size() > 0)
+                        Global.getMedia().eraseAudioFromDisk(note.getNoteAudio().get(0).getRoute());
+                    dialog.dismiss();
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onEditClick(Note note) {
         listener.onEditNoteVoiceClick(note);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.saveTextNote:
-                Global.showMessage("Save text note");
-                break;
-            case R.id.selectImage:
-                Global.showMessage("Select a image");
-                break;
-        }
     }
 
     public interface OnNoteVoiceListFragmentListener {
@@ -360,6 +336,53 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         public void setupSelectImage(){
             selectImage = (ImageButton)pageImage.findViewById(R.id.selectImage);
             selectImage.setOnClickListener(NoteVoiceListFragment.this);
+        }
+    }
+
+    /*THIS IS DEPRECATED*/
+    protected void startRecording() {
+        Global.getMedia().startAudioPlaying(R.raw.prip, new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                outputFilename = Media.generateOutputFilename();
+                Log.d("FILE NAME ", " FIRST >>> " + Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+                Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+                //startMaxLengthTimer();
+            }
+        });
+    }
+
+    protected void startMaxLengthTimer() {
+        stopMaxLengthTimer();
+        recordHandler.postDelayed(
+                recordRunnable = new Runnable() {
+                    public void run() {
+                        stopRecording();
+                    }
+                }, Media.RECORD_MAX_LENGTH_INTERVAL);
+    }
+
+    protected void stopMaxLengthTimer() {
+        recordHandler.removeCallbacks(recordRunnable);
+    }
+
+    protected void stopRecording() {
+        if (Global.getMedia().isRecording()) {
+            //stopMaxLengthTimer();
+            Global.getMedia().stopAudioRecording();
+
+            // Recorded more than a half second?
+            if (Global.getMedia().getAudioLength(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename) > 500) {
+                if (!outputFilename.equals("")){
+                    //Log.d("FILE NAME ", " >>>>>>>>>>> EMPTY");
+                   //saveAudioNote();
+                }else{
+                    Log.d("ERROR FILE NAME ", Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
+                }
+            } else {
+                //Here
+            }
         }
     }
 }

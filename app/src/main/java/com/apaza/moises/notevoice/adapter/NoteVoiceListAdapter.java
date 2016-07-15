@@ -18,6 +18,9 @@ import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.AudioPlayView;
 import com.apaza.moises.notevoice.view.TextNoteView;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -32,6 +35,8 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
     private int finalTime = 0;
     private Handler handler = new Handler();
 
+    private Comparator comparator;
+
     public interface OnNoteVoiceListAdapterListener{
         void onDeleteClick(Note note);
         void onEditClick(Note note);
@@ -39,6 +44,12 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
 
     public NoteVoiceListAdapter(List<Note> listNote){
         this.listNote = listNote;
+        comparator = new Comparator<Note>() {
+            @Override
+            public int compare(Note lhs, Note rhs) {
+                return rhs.getCreateAt().compareTo(lhs.getCreateAt());
+            }
+        };
     }
 
 
@@ -56,21 +67,45 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
     public void onBindViewHolder(ViewHolder holder, int position) {
         Note note = listNote.get(position);
         if(note.getNoteAudio().size() > 0){
+            holder.audioPlay.setVisibility(View.VISIBLE);
             prepareAudio(holder.audioPlay, note.getNoteAudio().get(0));
         }else{
             holder.audioPlay.setVisibility(View.GONE);
         }
 
-        if(note.getNoteMessage().size() > 0)
+        if(note.getNoteMessage().size() > 0){
+            holder.textNote.setVisibility(View.VISIBLE);
             holder.textNote.setTextNote(note.getNoteMessage().get(0).getTextMessage());
-        else
+        } else{
             holder.textNote.setVisibility(View.GONE);
+        }
+
         holder.date.setText(Utils.getTimeCustom(note.getCreateAt()));
     }
 
     @Override
     public int getItemCount() {
         return listNote.size();
+    }
+
+    public void addItem(Note note){
+        listNote.add(note);
+        notifyDataSetChanged();
+    }
+
+    public void addItem(int position, Note note){
+        listNote.add(position, note);
+        notifyDataSetChanged();
+    }
+
+    public void sortDesc(){
+        Collections.sort(listNote, comparator);
+    }
+
+    public void removeItem(Note note){
+        int position = listNote.indexOf(note);
+        listNote.remove(position);
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

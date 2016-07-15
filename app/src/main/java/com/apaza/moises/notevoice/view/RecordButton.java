@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
-    public static final String TAG = "RADIO_BUTTON";
+    public static final String TAG = "RECORD_BUTTON";
 
     private TextView time;
     private ImageButton record;
@@ -35,6 +36,8 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
     private long count = 0;
     private boolean isCanceled = false;
+
+    private GestureDetector gestureDetector;
 
     private OnRecordButtonListener onRecordButtonListener;
 
@@ -54,6 +57,8 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
     }
 
     private void setupView(){
+        gestureDetector = new GestureDetector(getContext(), new RecordButtonGestureListener());
+
         LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_record_button, this, true);
         time = (TextView)findViewById(R.id.time);
@@ -67,11 +72,12 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        this.gestureDetector.onTouchEvent(event);
         switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
+            /*case MotionEvent.ACTION_DOWN:
                 if(onRecordButtonListener != null)
                     startAnimationRecord(record);
-                break;
+                break;*/
 
             case MotionEvent.ACTION_UP:
                 if(onRecordButtonListener != null)
@@ -79,9 +85,9 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
 
                 break;
 
-            case MotionEvent.ACTION_CANCEL:
+            /*case MotionEvent.ACTION_CANCEL:
                 //collapseText(time);
-                break;
+                break;*/
         }
         return false;
     }
@@ -146,8 +152,6 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         anim.start();
     }
 
-
-
     public void endAnimationRecord(View view) {
         ObjectAnimator anim1 = ObjectAnimator.ofFloat(view, "scaleX", 1.7f, 1.0f);
         ObjectAnimator anim2 = ObjectAnimator.ofFloat(view, "scaleY", 1.7f, 1.0f);
@@ -197,6 +201,66 @@ public class RecordButton extends FrameLayout implements View.OnTouchListener{
         time.setText("00:00");
     }
 
+    public class RecordButtonGestureListener extends GestureDetector.SimpleOnGestureListener{
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, " >>>>>>>> DOWN" );
+                    break;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, " >>>>>>>> SINGLE TAP DOWN" );
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.d(TAG, " >>>>>>>> SINGLE TAP UP" );
+                    /*if(onRecordButtonListener != null)
+                        collapseText(time);*/
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, " >>>>>>>> L1ONG PRESS DOWN" );
+                    if(onRecordButtonListener != null)
+                        startAnimationRecord(record);
+                    break;
+                /*case MotionEvent.ACTION_UP:
+                    Log.d(TAG, " >>>>>>>> L1ONG PRESS UP" );
+                    if(onRecordButtonListener != null)
+                        collapseText(time);
+                    break;
+                default:
+                    break;*/
+            }
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    Log.d(TAG, " >>>>>>>> DOUBLE TAP DOWN" );
+                    break;
+                case MotionEvent.ACTION_UP:
+                    Log.d(TAG, " >>>>>>>> DOUBLE TAP UP" );
+                    break;
+            }
+            return true;
+        }
+    }
     //recordingTime.setText(String.valueOf(count));
                 /*recordingTime.setText(String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes(count*1000),
