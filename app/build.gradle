@@ -35,4 +35,7 @@ dependencies {
     //View pager indicator
     compile 'me.relex:circleindicator:1.1.8@aar'
 
+    //Floating button with menu
+    compile 'com.github.clans:fab:1.6.4'
+
 }

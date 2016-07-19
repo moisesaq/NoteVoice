@@ -2,15 +2,13 @@ package com.apaza.moises.notevoice.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -19,13 +17,19 @@ import com.apaza.moises.notevoice.adapter.ListAudioAdapter;
 import com.apaza.moises.notevoice.adapter.ListTextAdapter;
 import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.DaoSession;
 import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
+import com.apaza.moises.notevoice.global.Utils;
+import com.apaza.moises.notevoice.model.Media;
+import com.apaza.moises.notevoice.view.RecordButton;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.List;
 
-public class DetailNoteFragment extends BaseFragment implements View.OnClickListener{
+public class DetailNoteFragment extends BaseFragment implements View.OnClickListener, RecordButton.OnRecordButtonListener, NewTextNoteDialog.OnNewTextNoteListener{
 
     public static final String TAG = "DETAIL_NOTE_FRAGMENT";
     public static final String ID_NOTE = "idNote";
@@ -34,16 +38,20 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     private Note note;
     private View view;
 
-    private ListView listAudio;
-    private ListAudioAdapter listAudioAdapter;
-    private LinearLayout emptyAudio;
-    private ImageButton addNewAudio;
-
     private ListView listText;
     private ListTextAdapter listTextAdapter;
     private TextView emptyText;
-    private EditText inputTextNote;
-    private ImageButton addNewText;
+
+    private ListView listAudio;
+    private ListAudioAdapter listAudioAdapter;
+    private TextView emptyAudio;
+    private RecordButton recordButton;
+
+    private FloatingActionMenu fam;
+    private FloatingActionButton fabActionNewText;
+    private FloatingActionButton fabActionNewImage;
+
+    private String outputFilename;
 
     public DetailNoteFragment(){
 
@@ -78,13 +86,19 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     private void setupView(){
         prepareListAudio();
         prepareListText();
+
+        fam = (FloatingActionMenu)view.findViewById(R.id.actionMenu);
+        fabActionNewText = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewText);
+        fabActionNewText.setOnClickListener(this);
+        fabActionNewImage = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewImage);
+        fabActionNewImage.setOnClickListener(this);
     }
 
     private void prepareListAudio(){
         listAudio = (ListView)view.findViewById(R.id.listAudio);
-        emptyAudio = (LinearLayout)view.findViewById(R.id.emptyAudio);
-        addNewAudio = (ImageButton)view.findViewById(R.id.addNewAudio);
-        addNewAudio.setOnClickListener(this);
+        emptyAudio = (TextView) view.findViewById(R.id.emptyAudio);
+        recordButton = (RecordButton) view.findViewById(R.id.recordAudio);
+        recordButton.setOnRecordButtonListener(this);
 
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
         if(list != null && list.size() > 0){
@@ -109,9 +123,6 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     private void prepareListText(){
         listText = (ListView)view.findViewById(R.id.listText);
         emptyText = (TextView)view.findViewById(R.id.emptyText);
-        inputTextNote = (EditText)view.findViewById(R.id.inputTextNote);
-        addNewText = (ImageButton)view.findViewById(R.id.addNewText);
-        addNewText.setOnClickListener(this);
 
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
         if(list != null && list.size() > 0){
@@ -155,13 +166,74 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.addNewAudio:
-                Global.showMessage("Add new audio");
+            case R.id.actionNewText:
+
+                NewTextNoteDialog newTextNoteDialog = NewTextNoteDialog.newInstance(this);
+                newTextNoteDialog.show(getFragmentManager(), NewTextNoteDialog.TAG);
+                fam.close(true);
                 break;
 
-            case R.id.addNewText:
-                Global.showMessage("Add new text");
+            case R.id.actionNewImage:
+                Global.showMessage("Add new image");
+                fam.close(true);
                 break;
         }
+    }
+
+    /*RECORD BUTTON LISTENER*/
+    @Override
+    public void onStartRecord() {
+        Global.showMessage("Start record");
+        outputFilename = Media.generateOutputFilename();
+        Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+    }
+
+    @Override
+    public void onEndRecord(long second) {
+        Global.showMessage("End record");
+        if (Global.getMedia().isRecording()) {
+            Global.getMedia().stopAudioRecording();
+
+            if (!outputFilename.isEmpty()){
+                saveAudioNote();
+            }else{
+                Log.d(TAG, "ERROR >> " + Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
+            }
+        }
+    }
+
+    private void saveAudioNote(){
+        Note note = Global.getNewNote();
+        if(note != null){
+            DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+            long idNote = daoSession.getNoteDao().insert(note);
+            if(idNote > 0){
+                Audio audio = getAudioOfView();
+                audio.setIdNote(idNote);
+                long idAudio = daoSession.getAudioDao().insert(audio);
+                if(idAudio > 0)
+                    Global.showMessage("Note recorded");
+            }
+        }
+    }
+
+    private Audio getAudioOfView(){
+        Audio audio = new Audio();
+        audio.setCode(Utils.generateCodeUnique("audio"));
+        audio.setRoute(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
+        audio.setDuration(0);//Media.formatDuration(Media.getDurationAudioFile(audio.getRoute()));
+        audio.setCreateAt(Utils.getCurrentDate());
+        return audio;
+    }
+
+    @Override
+    public void onCancelRecord() {
+        Global.showMessage("Cancel record");
+    }
+
+    /*NEW TEXT NOTE DIALOG LISTENER*/
+    @Override
+    public void onAccept(String text) {
+        Global.showMessage(text);
     }
 }

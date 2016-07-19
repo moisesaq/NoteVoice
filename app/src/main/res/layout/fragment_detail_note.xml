@@ -1,227 +1,277 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/paddingMinGlobal">
 
-    <android.support.v7.widget.CardView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="4dp"
-        card_view:cardUseCompatPadding="true"
-        android:background="@color/grayMoises"
-        android:layout_marginLeft="@dimen/marginMinGlobal"
-        android:layout_marginRight="@dimen/marginMinGlobal"
-        android:layout_marginTop="@dimen/marginMinGlobal"
-        android:layout_marginBottom="@dimen/marginMinGlobal">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                style="@style/TextViewMoisesSmall"
-                android:text="Your voice notes"
-                android:textColor="@color/orange_light" />
-
-            <FrameLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ListView
-                    android:id="@+id/listAudio"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:visibility="gone"/>
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="2dp"
+                card_view:cardElevation="4dp"
+                card_view:cardUseCompatPadding="true"
+                android:background="@color/grayMoises"
+                android:layout_marginLeft="@dimen/marginMinGlobal"
+                android:layout_marginRight="@dimen/marginMinGlobal"
+                android:layout_marginTop="@dimen/marginMediumGlobal"
+                android:layout_marginBottom="@dimen/marginMinGlobal">
 
                 <LinearLayout
-                    android:id="@+id/emptyAudio"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/contentListText"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/paddingMediumGlobal"
-                    android:gravity="center"
-                    android:layout_gravity="center">
+                    android:orientation="vertical">
 
                     <TextView
                         style="@style/TextViewMoisesSmall"
-                        android:text="Empty"
-                        android:layout_marginRight="@dimen/marginMinGlobal"/>
+                        android:text="@string/your_text_notes"
+                        android:textColor="@color/blue_light"
+                        android:layout_margin="@dimen/marginMinGlobal"/>
 
-                    <ImageButton
-                        android:id="@+id/addNewAudio"
-                        style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_plus_grey600_24dp"/>
-
-                </LinearLayout>
-            </FrameLayout>
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="4dp"
-        card_view:cardUseCompatPadding="true"
-        android:background="@color/grayMoises"
-        android:layout_marginLeft="@dimen/marginMinGlobal"
-        android:layout_marginRight="@dimen/marginMinGlobal"
-        android:layout_marginTop="@dimen/marginMinGlobal"
-        android:layout_marginBottom="@dimen/marginMinGlobal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TextViewMoisesSmall"
-                android:text="Your text notes"
-                android:textColor="@color/blue_light"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ListView
-                    android:id="@+id/listText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:visibility="gone"/>
-
-                <TextView
-                    android:id="@+id/emptyText"
-                    style="@style/TextViewMoisesSmall"
-                    android:layout_gravity="center"
-                    android:padding="@dimen/paddingMediumGlobal"
-                    android:text="Empty"/>
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="@dimen/paddingMediumGlobal"
-                android:gravity="center"
-                android:layout_gravity="center">
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/tilTextNote"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical">
-
-                    <EditText
-                        android:id="@+id/inputTextNote"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Write here"
-                        android:singleLine="false"
-                        android:textColor="@android:color/white"
-                        android:gravity="top|left"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-                <ImageButton
-                    android:id="@+id/addNewText"
-                    style="@style/ImageButtonCircleMoises"
-                    android:padding="@dimen/paddingMediumGlobal"
-                    android:src="@mipmap/ic_pen_white_24dp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="4dp"
-        card_view:cardUseCompatPadding="true"
-        android:background="@color/grayMoises"
-        android:layout_marginLeft="@dimen/marginMinGlobal"
-        android:layout_marginRight="@dimen/marginMinGlobal"
-        android:layout_marginTop="@dimen/marginMinGlobal"
-        android:layout_marginBottom="@dimen/marginMinGlobal">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TextViewMoisesSmall"
-                android:text="Your image notes"
-                android:textColor="@color/orange_light" />
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:background="@color/grayLight">
-
-                    <android.support.v4.view.ViewPager
-                        android:id="@+id/viewPagerImageNotes"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                    </android.support.v4.view.ViewPager>
+                        <ListView
+                            android:id="@+id/listText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:visibility="gone"/>
 
-                    <ImageButton
-                        android:id="@+id/previous"
-                        style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_arrow_left_grey600_24dp"
-                        android:layout_gravity="left|center_vertical"/>
+                        <TextView
+                            android:id="@+id/emptyText"
+                            style="@style/TextViewMoisesSmall"
+                            android:layout_gravity="center"
+                            android:padding="@dimen/paddingMaxGlobal"
+                            android:text="@string/empty"/>
+                    </FrameLayout>
 
-                    <ImageButton
-                        android:id="@+id/next"
-                        style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_arrow_right_grey600_24dp"
-                        android:layout_gravity="right|center_vertical"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-                    <me.relex.circleindicator.CircleIndicator
-                        android:id="@+id/indicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_gravity="bottom|center_horizontal"/>
-
-                </FrameLayout>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="2dp"
+                card_view:cardElevation="4dp"
+                card_view:cardUseCompatPadding="true"
+                android:background="@color/grayMoises"
+                android:layout_marginLeft="@dimen/marginMinGlobal"
+                android:layout_marginRight="@dimen/marginMinGlobal"
+                android:layout_marginTop="@dimen/marginMaxGlobal"
+                android:layout_marginBottom="@dimen/marginMediumGlobal">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/contentListAudio"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/paddingMediumGlobal"
-                    android:gravity="center"
-                    android:layout_gravity="center">
+                    android:orientation="vertical">
 
                     <TextView
                         style="@style/TextViewMoisesSmall"
-                        android:text="Empty"
-                        android:layout_marginRight="@dimen/marginMinGlobal"/>
+                        android:text="@string/your_audio_notes"
+                        android:textColor="@color/orange_light"
+                        android:layout_margin="@dimen/marginMinGlobal"/>
 
-                    <ImageButton
-                        android:id="@+id/addNewImage"
-                        style="@style/ImageButtonMoises"
-                        android:src="@mipmap/ic_plus_grey600_24dp"/>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ListView
+                            android:id="@+id/listAudio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:visibility="gone"/>
+
+                        <TextView
+                            android:id="@+id/emptyAudio"
+                            style="@style/TextViewMoisesSmall"
+                            android:text="Empty"
+                            android:layout_gravity="center"
+                            android:padding="@dimen/paddingMaxGlobal"/>
+                    </FrameLayout>
 
                 </LinearLayout>
-            </FrameLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                card_view:cardCornerRadius="2dp"
+                card_view:cardElevation="4dp"
+                card_view:cardUseCompatPadding="true"
+                android:background="@color/grayMoises"
+                android:layout_marginLeft="@dimen/marginMinGlobal"
+                android:layout_marginRight="@dimen/marginMinGlobal"
+                android:layout_marginTop="@dimen/marginMinGlobal"
+                android:layout_marginBottom="@dimen/marginMediumGlobal">
+
+                <LinearLayout
+                    android:id="@+id/contentListImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextViewMoisesSmall"
+                        android:text="@string/your_image_notes"
+                        android:textColor="@color/orange_light"
+                        android:layout_margin="@dimen/marginMinGlobal"/>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp"
+                            android:background="@color/grayLight">
+
+                            <android.support.v4.view.ViewPager
+                                android:id="@+id/viewPagerImageNotes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                            </android.support.v4.view.ViewPager>
+
+                            <ImageButton
+                                android:id="@+id/previous"
+                                style="@style/ImageButtonMoises"
+                                android:src="@mipmap/ic_arrow_left_grey600_24dp"
+                                android:layout_gravity="left|center_vertical"/>
+
+                            <ImageButton
+                                android:id="@+id/next"
+                                style="@style/ImageButtonMoises"
+                                android:src="@mipmap/ic_arrow_right_grey600_24dp"
+                                android:layout_gravity="right|center_vertical"/>
+
+                            <me.relex.circleindicator.CircleIndicator
+                                android:id="@+id/indicator"
+                                android:layout_width="wrap_content"
+                                android:layout_height="50dp"
+                                android:layout_gravity="bottom|center_horizontal"/>
+
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/emptyImage"
+                            style="@style/TextViewMoisesSmall"
+                            android:text="@string/empty"
+                            android:layout_gravity="center" />
+                    </FrameLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </android.support.v4.widget.NestedScrollView>
 
-</LinearLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/actionMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        fab:menu_animationDelayPerItem="55"
+        fab:menu_backgroundColor="@android:color/transparent"
+        fab:menu_buttonSpacing="0dp"
+        fab:menu_colorNormal="@color/colorPrimary"
+        fab:menu_colorPressed="@color/colorPrimaryDark"
+        fab:menu_colorRipple="@color/grayMoises"
+        fab:menu_fab_label="Floating Action Menu"
+        fab:menu_fab_size="normal"
+        fab:menu_icon="@drawable/fab_add"
+        fab:menu_labels_colorNormal="@color/grayMoises"
+        fab:menu_labels_colorPressed="@color/colorPrimary"
+        fab:menu_labels_colorRipple="@color/colorPrimary"
+        fab:menu_labels_cornerRadius="@dimen/cornerDefault"
+        fab:menu_labels_ellipsize="none"
+        fab:menu_labels_hideAnimation="@anim/fab_slide_out_to_right"
+        fab:menu_labels_margin="0dp"
+        fab:menu_labels_maxLines="-1"
+        fab:menu_labels_padding="2dp"
+        fab:menu_labels_position="left"
+        fab:menu_labels_showAnimation="@anim/fab_slide_in_from_right"
+        fab:menu_labels_showShadow="false"
+        fab:menu_labels_singleLine="true"
+        fab:menu_labels_textColor="@android:color/white"
+        fab:menu_labels_textSize="15sp"
+        fab:menu_openDirection="up"
+        fab:menu_shadowColor="@android:color/transparent"
+        fab:menu_shadowRadius="4dp"
+        fab:menu_shadowXOffset="1dp"
+        fab:menu_shadowYOffset="0dp"
+        fab:menu_showShadow="true"
+        android:visibility="visible">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/actionNewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_pen_white_24dp"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryDark"
+            fab:fab_colorRipple="@android:color/darker_gray"
+            fab:fab_label="Call driver"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/actionNewImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_camera_white_24dp"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_colorPressed="@color/colorPrimaryDark"
+            fab:fab_colorRipple="@android:color/darker_gray"
+            fab:fab_label="Menu Item 2"
+            fab:fab_size="mini" />
+    </com.github.clans.fab.FloatingActionMenu>
+
+    <com.apaza.moises.notevoice.view.RecordButton
+        android:id="@+id/recordAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/marginMinGlobal"
+        app:layout_anchorGravity="right|end"
+        app:layout_anchor="@+id/contentListAudio"/>
+
+    <!--<android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/marginMaxGlobal"
+        android:src="@mipmap/ic_pen_white_24dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:borderWidth="0dp"
+        app:layout_anchorGravity="right|end"
+        app:layout_anchor="@+id/contentListText" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/marginMaxGlobal"
+        android:src="@mipmap/ic_plus_white_24dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:borderWidth="0dp"
+        app:layout_anchorGravity="right|end"
+        app:layout_anchor="@+id/contentListImage" />-->
+
+
+</android.support.design.widget.CoordinatorLayout>

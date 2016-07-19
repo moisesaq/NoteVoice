@@ -13,5 +13,6 @@
     <dimen name="marginMaxGlobal">24dp</dimen>
 
     <dimen name="heightViewPagerAction">100dp</dimen>
+    <dimen name="cornerDefault">4dp</dimen>
 
 </resources>

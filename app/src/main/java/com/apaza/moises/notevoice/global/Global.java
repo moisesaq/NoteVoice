@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.model.HandlerDB;
 import com.apaza.moises.notevoice.MainActivity;
 import com.apaza.moises.notevoice.model.Media;
@@ -75,6 +76,15 @@ public class Global {
         }
     }
 
+    public static Note getNewNote(){
+        Note note = new Note();
+        note.setCode(Utils.generateCodeUnique("note"));
 
+        note.setColor(String.valueOf(Utils.colorGenerator.getRandomColor()));
+        note.setCreateAt(Utils.getCurrentDate());
+        note.setUpdateAt(Utils.getCurrentDate());
+
+        return note;
+    }
 
 }

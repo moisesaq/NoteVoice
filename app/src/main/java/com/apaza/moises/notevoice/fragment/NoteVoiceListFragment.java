@@ -129,7 +129,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     }
 
     private void saveAudioNote(){
-        Note note = getNewNote();
+        Note note = Global.getNewNote();
         if(note != null){
             DaoSession daoSession = Global.getHandlerDB().getDaoSession();
             long idNote = daoSession.getNoteDao().insert(note);
@@ -144,7 +144,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
     }
 
     private void saveTextNote(){
-        Note note = getNewNote();
+        Note note = Global.getNewNote();
         if(note != null){
             DaoSession daoSession = Global.getHandlerDB().getDaoSession();
             long idNote = daoSession.getNoteDao().insert(note);
@@ -164,16 +164,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         }
     }
 
-    private Note getNewNote(){
-        Note note = new Note();
-        note.setCode(Utils.generateCodeUnique("note"));
 
-        note.setColor(String.valueOf(Utils.colorGenerator.getRandomColor()));
-        note.setCreateAt(Utils.getCurrentDate());
-        note.setUpdateAt(Utils.getCurrentDate());
-
-        return note;
-    }
 
     private Message getMessageOfView(){
         String text = textNote.getText().toString();
