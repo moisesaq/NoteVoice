@@ -122,10 +122,8 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
         Log.d(TAG, " Size" + list.size());
-        if(list == null){
+        if(list.size() > 0)
             hideEmptyText();
-            list = new ArrayList<>();
-        }
 
         listTextAdapter = new ListTextAdapter(getContext(), list);
         listText.setAdapter(listTextAdapter);
@@ -213,8 +211,8 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
             if(message != null){
                 hideEmptyText();
                 Global.showMessage("Text note added");
-                if(listAudioAdapter !=null)
-                    listTextAdapter.add(message);
+                listTextAdapter.add(message);
+                listTextAdapter.notifyDataSetChanged();
             }
         }
     }

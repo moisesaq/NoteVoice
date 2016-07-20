@@ -64,10 +64,9 @@ public class ListTextAdapter extends ArrayAdapter<Message> {
         return view;
     }
 
-    @Override
+    /*@Override
     public void add(Message message) {
-        super.add(message);
+        //super.add(message);
         //this.sort(comparator);
-        //notifyDataSetChanged();
-    }
+    }*/
 }
