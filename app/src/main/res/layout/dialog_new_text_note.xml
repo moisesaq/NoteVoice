@@ -37,21 +37,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="right">
 
         <Button
             android:id="@+id/cancel"
-            style="@style/ButtonNoteVoice"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            style="@style/ImageButtonTechno.Transparent"
             android:text="@string/cancel"
             android:textStyle="normal"/>
 
         <Button
             android:id="@+id/save"
-            style="@style/ButtonNoteVoice"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            style="@style/ImageButtonTechno.Transparent"
             android:text="@string/save"
             android:textStyle="normal"/>
     </LinearLayout>

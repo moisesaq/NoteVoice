@@ -7,21 +7,29 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.apaza.moises.notevoice.R;
-import com.apaza.moises.notevoice.database.Audio;
 import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.view.TextNoteView;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class ListTextAdapter extends ArrayAdapter<Message> {
 
     private Context context;
-    private List<Message> textList;
+
+    private Comparator<? super Message> comparator;
 
     public ListTextAdapter(Context context, List<Message> textList){
         super(context, R.layout.list_text_item, textList);
         this.context = context;
-        this.textList = textList;
+        comparator = new Comparator<Message>() {
+            @Override
+            public int compare(Message lhs, Message rhs) {
+                if(lhs == null || rhs == null)
+                    return 0;
+                return lhs.getCreateAt().compareTo(rhs.getCreateAt());
+            }
+        };
     }
 
     public static class ViewHolder{
@@ -54,5 +62,12 @@ public class ListTextAdapter extends ArrayAdapter<Message> {
         Message message = getItem(position);
         holder.textNote.setTextNote(message.getTextMessage());
         return view;
+    }
+
+    @Override
+    public void add(Message message) {
+        super.add(message);
+        //this.sort(comparator);
+        //notifyDataSetChanged();
     }
 }

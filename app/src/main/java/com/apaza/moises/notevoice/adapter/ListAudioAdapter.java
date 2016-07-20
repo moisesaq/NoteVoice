@@ -10,27 +10,34 @@ import android.widget.ArrayAdapter;
 
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.AudioPlayView;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class ListAudioAdapter extends ArrayAdapter<Audio> {
 
     private Context context;
-    private List<Audio> audioList;
-
     private AudioPlayView lastAudioPlayView;
 
     private int startTime = 0;
     private int finalTime = 0;
     private Handler handler = new Handler();
 
+    private Comparator<? super Audio> comparator;
+
     public ListAudioAdapter(Context context, List<Audio> audioList){
         super(context, R.layout.list_audio_item, audioList);
         this.context = context;
-        this.audioList = audioList;
+        comparator = new Comparator<Audio>() {
+            @Override
+            public int compare(Audio lhs, Audio rhs) {
+                return lhs.getCreateAt().compareTo(rhs.getCreateAt());
+            }
+        };
     }
 
     public static class ViewHolder{
@@ -63,6 +70,13 @@ public class ListAudioAdapter extends ArrayAdapter<Audio> {
         Audio audio = getItem(position);
         prepareAudio(holder.audioPlayView, audio);
         return view;
+    }
+
+    @Override
+    public void add(Audio object) {
+        super.add(object);
+        this.sort(comparator);
+        notifyDataSetChanged();
     }
 
     public void prepareAudio(final AudioPlayView audioPlayView, final Audio audio){

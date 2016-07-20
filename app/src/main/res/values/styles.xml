@@ -56,6 +56,10 @@
         <item name="android:background">@drawable/image_button</item>
     </style>
 
+    <style name="ImageButtonTechno.Transparent" parent="ImageButtonMoises">
+        <item name="android:background">@drawable/background_transparent</item>
+    </style>
+
     <style name="ImageButtonCircleMoises" parent="ImageButtonMoises">
         <item name="android:padding">@dimen/paddingMaxGlobal</item>
         <item name="android:background">@drawable/image_button_circle</item>

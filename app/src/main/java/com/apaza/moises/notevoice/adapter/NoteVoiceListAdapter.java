@@ -35,7 +35,7 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
     private int finalTime = 0;
     private Handler handler = new Handler();
 
-    private Comparator comparator;
+    private Comparator<? super Note> comparator;
 
     public interface OnNoteVoiceListAdapterListener{
         void onDeleteClick(Note note);
@@ -90,6 +90,7 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
 
     public void addItem(Note note){
         listNote.add(note);
+        sortDesc();
         notifyDataSetChanged();
     }
 
@@ -129,12 +130,16 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
 
         @Override
         public void onClick(View v) {
+            Note note = listNote.get(getAdapterPosition());
             switch (v.getId()){
+
                 case R.id.delete:
-                    onNoteVoiceListAdapterListener.onDeleteClick(listNote.get(getAdapterPosition()));
+                    if(onNoteVoiceListAdapterListener != null && note != null)
+                        onNoteVoiceListAdapterListener.onDeleteClick(note);
                     break;
                 case R.id.edit:
-                    onNoteVoiceListAdapterListener.onEditClick(listNote.get(getAdapterPosition()));
+                    if(onNoteVoiceListAdapterListener != null && note != null)
+                        onNoteVoiceListAdapterListener.onEditClick(note);
                     break;
             }
         }

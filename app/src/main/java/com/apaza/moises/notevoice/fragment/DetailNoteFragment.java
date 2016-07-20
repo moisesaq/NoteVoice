@@ -17,16 +17,15 @@ import com.apaza.moises.notevoice.adapter.ListAudioAdapter;
 import com.apaza.moises.notevoice.adapter.ListTextAdapter;
 import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Audio;
-import com.apaza.moises.notevoice.database.DaoSession;
 import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
-import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.RecordButton;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailNoteFragment extends BaseFragment implements View.OnClickListener, RecordButton.OnRecordButtonListener, NewTextNoteDialog.OnNewTextNoteListener{
@@ -101,13 +100,10 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         recordButton.setOnRecordButtonListener(this);
 
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
-        if(list != null && list.size() > 0){
+        if(list.size() > 0)
             hideEmptyAudio();
-            listAudioAdapter = new ListAudioAdapter(getContext(), list);
-            listAudio.setAdapter(listAudioAdapter);
-        }else {
-            showEmptyAudio();
-        }
+        listAudioAdapter = new ListAudioAdapter(getContext(), list);
+        listAudio.setAdapter(listAudioAdapter);
     }
 
     private void showEmptyAudio(){
@@ -125,13 +121,14 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         emptyText = (TextView)view.findViewById(R.id.emptyText);
 
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
-        if(list != null && list.size() > 0){
+        Log.d(TAG, " Size" + list.size());
+        if(list == null){
             hideEmptyText();
-            listTextAdapter = new ListTextAdapter(getContext(), list);
-            listText.setAdapter(listTextAdapter);
-        }else{
-            showEmptyText();
+            list = new ArrayList<>();
         }
+
+        listTextAdapter = new ListTextAdapter(getContext(), list);
+        listText.setAdapter(listTextAdapter);
     }
 
     private void showEmptyText(){
@@ -167,7 +164,6 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.actionNewText:
-
                 NewTextNoteDialog newTextNoteDialog = NewTextNoteDialog.newInstance(this);
                 newTextNoteDialog.show(getFragmentManager(), NewTextNoteDialog.TAG);
                 fam.close(true);
@@ -184,46 +180,24 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     @Override
     public void onStartRecord() {
         Global.showMessage("Start record");
-        outputFilename = Media.generateOutputFilename();
-        Global.getMedia().startAudioRecording(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);
+        outputFilename = Media.AUDIO_DESTINATION_DIRECTORY + Media.generateOutputFilename();
+        Global.getMedia().startAudioRecording( outputFilename);
     }
 
     @Override
     public void onEndRecord(long second) {
-        Global.showMessage("End record");
         if (Global.getMedia().isRecording()) {
             Global.getMedia().stopAudioRecording();
 
             if (!outputFilename.isEmpty()){
-                saveAudioNote();
-            }else{
-                Log.d(TAG, "ERROR >> " + Media.AUDIO_DESTINATION_DIRECTORY + " >>> " + outputFilename);
+                Audio audio = Global.saveAudioNote(note, outputFilename);
+                if(audio != null){
+                    hideEmptyAudio();
+                    Global.showMessage("Audio note added");
+                    listAudioAdapter.add(audio);
+                }
             }
         }
-    }
-
-    private void saveAudioNote(){
-        Note note = Global.getNewNote();
-        if(note != null){
-            DaoSession daoSession = Global.getHandlerDB().getDaoSession();
-            long idNote = daoSession.getNoteDao().insert(note);
-            if(idNote > 0){
-                Audio audio = getAudioOfView();
-                audio.setIdNote(idNote);
-                long idAudio = daoSession.getAudioDao().insert(audio);
-                if(idAudio > 0)
-                    Global.showMessage("Note recorded");
-            }
-        }
-    }
-
-    private Audio getAudioOfView(){
-        Audio audio = new Audio();
-        audio.setCode(Utils.generateCodeUnique("audio"));
-        audio.setRoute(Media.AUDIO_DESTINATION_DIRECTORY + outputFilename);//String.valueOf(R.raw.detective));
-        audio.setDuration(0);//Media.formatDuration(Media.getDurationAudioFile(audio.getRoute()));
-        audio.setCreateAt(Utils.getCurrentDate());
-        return audio;
     }
 
     @Override
@@ -234,6 +208,14 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     /*NEW TEXT NOTE DIALOG LISTENER*/
     @Override
     public void onAccept(String text) {
-        Global.showMessage(text);
+        if(text.length() > 0){
+            Message message = Global.saveTextNote(note, text);
+            if(message != null){
+                hideEmptyText();
+                Global.showMessage("Text note added");
+                if(listAudioAdapter !=null)
+                    listTextAdapter.add(message);
+            }
+        }
     }
 }

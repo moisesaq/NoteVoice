@@ -1,9 +1,7 @@
 package com.apaza.moises.notevoice.global;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -11,16 +9,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.DaoSession;
+import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.model.HandlerDB;
 import com.apaza.moises.notevoice.MainActivity;
 import com.apaza.moises.notevoice.model.Media;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class Global {
     private static MainActivity context;
@@ -76,7 +71,8 @@ public class Global {
         }
     }
 
-    public static Note getNewNote(){
+    public static Note saveNewNote(){
+        DaoSession daoSession = Global.getHandlerDB().getDaoSession();
         Note note = new Note();
         note.setCode(Utils.generateCodeUnique("note"));
 
@@ -84,7 +80,54 @@ public class Global {
         note.setCreateAt(Utils.getCurrentDate());
         note.setUpdateAt(Utils.getCurrentDate());
 
-        return note;
+        long idNote = daoSession.getNoteDao().insert(note);
+        if(idNote > 0)
+            return note;
+
+        return null;
+    }
+
+    public static Audio saveAudioNote(Note note, String outputFileName){
+        if(note == null || outputFileName == null)
+            return null;
+
+        DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+        Audio audio = getNewAudio(outputFileName);
+        audio.setIdNote(note.getId());
+        if(daoSession.getAudioDao().insert(audio) > 0)
+            return audio;
+        else
+            return null;
+    }
+
+    public static Message saveTextNote(Note note, String text){
+        if(note == null)
+            return null;
+
+        DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+        Message message = getNewMessage(text);
+        message.setIdNote(note.getId());
+        if(daoSession.getMessageDao().insert(message) > 0)
+            return message;
+        else
+            return null;
+    }
+
+    private static Message getNewMessage(String text){
+        Message message = new Message();
+        message.setCode(Utils.generateCodeUnique("message"));
+        message.setTextMessage(text.isEmpty() ? "This is a note" : text);
+        message.setCreateAt(Utils.getCurrentDate());
+        return message;
+    }
+
+    private static Audio getNewAudio(String outputFilename){
+        Audio audio = new Audio();
+        audio.setCode(Utils.generateCodeUnique("audio"));
+        audio.setRoute(outputFilename);
+        audio.setDuration(0);
+        audio.setCreateAt(Utils.getCurrentDate());
+        return audio;
     }
 
 }
