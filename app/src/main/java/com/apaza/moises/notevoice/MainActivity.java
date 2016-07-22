@@ -1,6 +1,5 @@
 package com.apaza.moises.notevoice;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,10 +13,10 @@ import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.fragment.DetailNote;
 import com.apaza.moises.notevoice.fragment.DetailNoteFragment;
 import com.apaza.moises.notevoice.fragment.ListNoteFragment;
-import com.apaza.moises.notevoice.fragment.NoteVoiceListFragment;
+import com.apaza.moises.notevoice.fragment.ListNoteVoiceFragment;
 import com.apaza.moises.notevoice.global.Global;
 
-public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnListNoteFragmentListener, NoteVoiceListFragment.OnNoteVoiceListFragmentListener {
+public class MainActivity extends AppCompatActivity implements ListNoteFragment.OnListNoteFragmentListener, ListNoteVoiceFragment.OnNoteVoiceListFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
         setToolbar(toolbar);
         //setSupportActionBar(toolbar);
         //showFragment(ListNoteFragment.newInstance(""));
-        showFragment(NoteVoiceListFragment.newInstance());
+        showFragment(ListNoteVoiceFragment.newInstance());
     }
 
     public void setToolbar(Toolbar toolbar){

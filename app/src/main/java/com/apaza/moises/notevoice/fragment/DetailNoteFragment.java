@@ -2,7 +2,6 @@ package com.apaza.moises.notevoice.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +24,6 @@ import com.apaza.moises.notevoice.view.RecordButton;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetailNoteFragment extends BaseFragment implements View.OnClickListener, RecordButton.OnRecordButtonListener, NewTextNoteDialog.OnNewTextNoteListener{
@@ -83,9 +81,17 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     }
 
     private void setupView(){
-        prepareListAudio();
-        prepareListText();
+        listAudio = (ListView)view.findViewById(R.id.listAudio);
+        emptyAudio = (TextView) view.findViewById(R.id.emptyAudio);
+        recordButton = (RecordButton) view.findViewById(R.id.recordAudio);
+        recordButton.setOnRecordButtonListener(this);
+        loadListAudio();
 
+        listText = (ListView)view.findViewById(R.id.listText);
+        emptyText = (TextView)view.findViewById(R.id.emptyText);
+        loadListText();
+
+        Global.showListNote();
         fam = (FloatingActionMenu)view.findViewById(R.id.actionMenu);
         fabActionNewText = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewText);
         fabActionNewText.setOnClickListener(this);
@@ -93,12 +99,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         fabActionNewImage.setOnClickListener(this);
     }
 
-    private void prepareListAudio(){
-        listAudio = (ListView)view.findViewById(R.id.listAudio);
-        emptyAudio = (TextView) view.findViewById(R.id.emptyAudio);
-        recordButton = (RecordButton) view.findViewById(R.id.recordAudio);
-        recordButton.setOnRecordButtonListener(this);
-
+    private void loadListAudio(){
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
         if(list.size() > 0)
             hideEmptyAudio();
@@ -116,12 +117,8 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         listAudio.setVisibility(View.VISIBLE);
     }
 
-    private void prepareListText(){
-        listText = (ListView)view.findViewById(R.id.listText);
-        emptyText = (TextView)view.findViewById(R.id.emptyText);
-
+    private void loadListText(){
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
-        Log.d(TAG, " Size" + list.size());
         if(list.size() > 0)
             hideEmptyText();
 
@@ -193,6 +190,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
                     hideEmptyAudio();
                     Global.showMessage("Audio note added");
                     listAudioAdapter.add(audio);
+                    Global.showListAudio(note);
                 }
             }
         }
@@ -213,7 +211,9 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
                 Global.showMessage("Text note added");
                 listTextAdapter.add(message);
                 listTextAdapter.notifyDataSetChanged();
+                Global.showListText(note);
             }
         }
     }
+
 }

@@ -30,6 +30,7 @@
             android:padding="@dimen/paddingMinGlobal">
 
             <TextView
+                android:id="@+id/titleTextNote"
                 style="@style/TextViewMoisesSmall"
                 android:text="Text Note"
                 android:textStyle="bold"/>

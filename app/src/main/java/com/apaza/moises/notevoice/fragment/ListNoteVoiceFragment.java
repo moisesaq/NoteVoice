@@ -8,56 +8,55 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.apaza.moises.notevoice.R;
-import com.apaza.moises.notevoice.adapter.NoteVoiceListAdapter;
+import com.apaza.moises.notevoice.adapter.ListNoteVoiceAdapter;
 import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.RecordButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
-public class NoteVoiceListFragment extends BaseFragment implements RecordButton.OnRecordButtonListener, NoteVoiceListAdapter.OnNoteVoiceListAdapterListener, View.OnClickListener{
+public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.OnRecordButtonListener, ListNoteVoiceAdapter.OnNoteVoiceListAdapterListener, View.OnClickListener{
 
-    public static final String TAG = "NOTE_VOICE_LIST_FRAGMENT";
+    public static final String TAG = "NOTE_VOICE_LIST_FRAG";
 
     private View view;
     private ViewPager viewPagerAction;
 
     private RecyclerView listNoteVoice;
-    private NoteVoiceListAdapter adapter;
+    private ListNoteVoiceAdapter adapter;
 
-    private TextView message;
+    private TextView empty;
     private RecordButton recordAudio;
     private EditText textNote;
     private ImageButton saveTextNote, selectImage;
 
-    private LinearLayout viewMessage;
-    private ProgressBar loading;
     private ActionBar actionBar;
 
     private String outputFilename;
 
     private OnNoteVoiceListFragmentListener listener;
 
-    public NoteVoiceListFragment(){
+    public ListNoteVoiceFragment(){
 
     }
 
-    public static NoteVoiceListFragment newInstance(){
-        return new NoteVoiceListFragment();
+    public static ListNoteVoiceFragment newInstance(){
+        return new ListNoteVoiceFragment();
     }
 
     @Override
@@ -78,31 +77,44 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         CircleIndicator indicator = (CircleIndicator)view.findViewById(R.id.indicator);
         indicator.setViewPager(viewPagerAction);
 
-        viewMessage = (LinearLayout)view.findViewById(R.id.viewMessage);
-        loading = (ProgressBar)view.findViewById(R.id.loading);
-        message = (TextView)view.findViewById(R.id.message);
+        empty = (TextView)view.findViewById(R.id.empty);
 
         listNoteVoice = (RecyclerView)view.findViewById(R.id.listNoteVoice);
         loadNotes();
     }
 
     private void loadNotes(){
-        viewMessage.setVisibility(View.VISIBLE);
         List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
-        if(list != null && list.size() > 0){
-            viewMessage.setVisibility(View.INVISIBLE);
-            listNoteVoice.setVisibility(View.VISIBLE);
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            listNoteVoice.setLayoutManager(linearLayoutManager);
-            adapter = new NoteVoiceListAdapter(list);
-            adapter.sortDesc();
-            adapter.setOnNoteVoiceListAdapterListener(this);
-            listNoteVoice.setAdapter(adapter);
+        Global.showListNote();
+        if(list == null)
+            Log.d(TAG, "List null");
+
+        if(list.size() == 0)
+            Log.d(TAG, "List empty");
+
+        if(list.size() > 0){
+            hideEmpty();
         }else{
-            listNoteVoice.setVisibility(View.INVISIBLE);
-            loading.setVisibility(View.GONE);
-            message.setText("No found data");
+            list = new ArrayList<>();
+            showEmpty();
         }
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        listNoteVoice.setLayoutManager(linearLayoutManager);
+        adapter = new ListNoteVoiceAdapter(list);
+        adapter.sortDesc();
+        adapter.setOnNoteVoiceListAdapterListener(this);
+        listNoteVoice.setAdapter(adapter);
+    }
+
+    public void hideEmpty(){
+        empty.setVisibility(View.GONE);
+        listNoteVoice.setVisibility(View.VISIBLE);
+    }
+
+    public void showEmpty(){
+        listNoteVoice.setVisibility(View.GONE);
+        empty.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -111,11 +123,7 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
             case R.id.saveTextNote:
                 String text = textNote.getText().toString();
                 if(text.length() > 0){
-                    Note note = Global.saveNewNote();
-                    if (Global.saveTextNote(note, text) != null){
-                        Global.showMessage("Text note saved");
-                        adapter.addItem(note);
-                    }
+                    saveTextNote(text);
                 }else{
                     Global.showMessage(getContext().getString(R.string.write_here));
                 }
@@ -126,7 +134,15 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
         }
     }
 
-
+    public void saveTextNote(String text){
+        Note note = Global.saveNewNote();
+        if (Global.saveTextNote(note, text) != null){
+            Global.showMessage("Text note saved");
+            adapter.addItem(note);
+            if(adapter.getItemCount() == 0)
+                hideEmpty();
+        }
+    }
 
     @Override
     public void onResume(){
@@ -150,8 +166,9 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
             if (!outputFilename.isEmpty()){
                 Note note = Global.saveNewNote();
                 if(Global.saveAudioNote(note, outputFilename) != null){
-                    Global.showMessage("Audio recorded");
                     adapter.addItem(note);
+                    if(adapter.getItemCount() > 0)
+                        hideEmpty();
                 }
             }
         }
@@ -174,6 +191,10 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
                     if(note.getNoteAudio() != null && note.getNoteAudio().size() > 0)
                         Global.getMedia().eraseAudioFromDisk(note.getNoteAudio().get(0).getRoute());
                     dialog.dismiss();
+                    if(adapter.getItemCount() == 0){
+                        showEmpty();
+                    }
+                    Global.showListNote();
                 }
             });
         }catch (Exception e){
@@ -257,18 +278,18 @@ public class NoteVoiceListFragment extends BaseFragment implements RecordButton.
 
         public void setupRecordButton(){
             recordAudio = (RecordButton) pageAudio.findViewById(R.id.recordAudio);
-            recordAudio.setOnRecordButtonListener(NoteVoiceListFragment.this);
+            recordAudio.setOnRecordButtonListener(ListNoteVoiceFragment.this);
         }
 
         public void setupTextNote(){
             textNote = (EditText)pageText.findViewById(R.id.textNote);
             saveTextNote = (ImageButton)pageText.findViewById(R.id.saveTextNote);
-            saveTextNote.setOnClickListener(NoteVoiceListFragment.this);
+            saveTextNote.setOnClickListener(ListNoteVoiceFragment.this);
         }
 
         public void setupSelectImage(){
             selectImage = (ImageButton)pageImage.findViewById(R.id.selectImage);
-            selectImage.setOnClickListener(NoteVoiceListFragment.this);
+            selectImage.setOnClickListener(ListNoteVoiceFragment.this);
         }
     }
 

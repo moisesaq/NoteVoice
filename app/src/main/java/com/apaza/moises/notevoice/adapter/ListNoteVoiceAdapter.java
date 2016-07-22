@@ -18,13 +18,12 @@ import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.AudioPlayView;
 import com.apaza.moises.notevoice.view.TextNoteView;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 
-public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdapter.ViewHolder>{
+public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdapter.ViewHolder>{
 
     private List<Note> listNote;
     private OnNoteVoiceListAdapterListener onNoteVoiceListAdapterListener;
@@ -42,7 +41,7 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
         void onEditClick(Note note);
     }
 
-    public NoteVoiceListAdapter(List<Note> listNote){
+    public ListNoteVoiceAdapter(List<Note> listNote){
         this.listNote = listNote;
         comparator = new Comparator<Note>() {
             @Override
@@ -77,6 +76,7 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
             holder.textNote.setVisibility(View.VISIBLE);
             holder.textNote.setTextNote(note.getNoteMessage().get(0).getTextMessage());
         } else{
+            holder.titleTextNote.setVisibility(View.GONE);
             holder.textNote.setVisibility(View.GONE);
         }
 
@@ -110,8 +110,8 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-
         public AudioPlayView audioPlay;
+        public TextView titleTextNote;
         public TextNoteView textNote;
         public TextView date;
         public ImageButton delete, edit;
@@ -119,6 +119,7 @@ public class NoteVoiceListAdapter extends RecyclerView.Adapter<NoteVoiceListAdap
         public ViewHolder(View view){
             super(view);
             audioPlay = (AudioPlayView)view.findViewById(R.id.audioPlay);
+            titleTextNote = (TextView)view.findViewById(R.id.titleTextNote);
             textNote = (TextNoteView) view.findViewById(R.id.textNote);
             date = (TextView)view.findViewById(R.id.date);
             delete = (ImageButton)view.findViewById(R.id.delete);
