@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/paddingMaxGlobal">
+    android:padding="@dimen/paddingMediumGlobal">
 
     <FrameLayout
         android:layout_width="wrap_content"
@@ -34,13 +34,13 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:layout_marginLeft="@dimen/marginMinGlobal"
+        android:layout_marginRight="@dimen/marginMinGlobal"
         android:layout_gravity="center_vertical">
 
         <SeekBar
             android:id="@+id/progress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/paddingMinGlobal"/>
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/duration"
@@ -48,8 +48,6 @@
             android:textColor="@color/grayMoises"
             android:layout_gravity="right"
             android:text="02:12"/>
-
-
 
     </LinearLayout>
 

@@ -80,17 +80,20 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
         empty = (TextView)view.findViewById(R.id.empty);
 
         listNoteVoice = (RecyclerView)view.findViewById(R.id.listNoteVoice);
+        //loadNotes();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         loadNotes();
+        if(actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(false);
     }
 
     private void loadNotes(){
         List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
         Global.showListNote();
-        if(list == null)
-            Log.d(TAG, "List null");
-
-        if(list.size() == 0)
-            Log.d(TAG, "List empty");
 
         if(list.size() > 0){
             hideEmpty();
@@ -139,16 +142,9 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
         if (Global.saveTextNote(note, text) != null){
             Global.showMessage("Text note saved");
             adapter.addItem(note);
-            if(adapter.getItemCount() == 0)
+            if(adapter.getItemCount() > 0)
                 hideEmpty();
         }
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        if(actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(false);
     }
 
     /*RECORD BUTTON LISTENER*/
@@ -186,21 +182,19 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
             Global.showDialogConfirmation(new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Global.getHandlerDB().getDaoSession().getNoteDao().delete(note);
-                    adapter.removeItem(note);
-                    if(note.getNoteAudio() != null && note.getNoteAudio().size() > 0)
-                        Global.getMedia().eraseAudioFromDisk(note.getNoteAudio().get(0).getRoute());
-                    dialog.dismiss();
-                    if(adapter.getItemCount() == 0){
-                        showEmpty();
+
+                    if(Global.deleteNote(note)){
+                        adapter.removeItem(note);
+                        if(adapter.getItemCount() == 0)
+                            showEmpty();
+                        dialog.dismiss();
+                        Global.showListNote();
                     }
-                    Global.showListNote();
                 }
             });
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     @Override

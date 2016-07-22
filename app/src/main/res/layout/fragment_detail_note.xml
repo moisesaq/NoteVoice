@@ -48,7 +48,7 @@
                         <ListView
                             android:id="@+id/listText"
                             android:layout_width="match_parent"
-                            android:layout_height="200dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:visibility="gone"/>
 
@@ -94,7 +94,7 @@
                         <ListView
                             android:id="@+id/listAudio"
                             android:layout_width="match_parent"
-                            android:layout_height="200dp"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:visibility="gone"/>
 
@@ -119,7 +119,8 @@
                 android:layout_marginLeft="@dimen/marginMinGlobal"
                 android:layout_marginRight="@dimen/marginMinGlobal"
                 android:layout_marginTop="@dimen/marginMinGlobal"
-                android:layout_marginBottom="@dimen/marginMediumGlobal">
+                android:layout_marginBottom="@dimen/marginMediumGlobal"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/contentListImage"
@@ -181,7 +182,6 @@
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/actionMenu"

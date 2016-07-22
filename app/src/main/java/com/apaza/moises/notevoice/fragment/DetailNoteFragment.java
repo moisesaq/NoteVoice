@@ -19,11 +19,13 @@ import com.apaza.moises.notevoice.database.Audio;
 import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
+import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Media;
 import com.apaza.moises.notevoice.view.RecordButton;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailNoteFragment extends BaseFragment implements View.OnClickListener, RecordButton.OnRecordButtonListener, NewTextNoteDialog.OnNewTextNoteListener{
@@ -91,7 +93,8 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         emptyText = (TextView)view.findViewById(R.id.emptyText);
         loadListText();
 
-        Global.showListNote();
+        Global.showListText(note);
+        Global.showListAudio(note);
         fam = (FloatingActionMenu)view.findViewById(R.id.actionMenu);
         fabActionNewText = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewText);
         fabActionNewText.setOnClickListener(this);
@@ -101,8 +104,13 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
     private void loadListAudio(){
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
-        if(list.size() > 0)
+        if(list.size() > 0){
             hideEmptyAudio();
+        }else{
+            list = new ArrayList<>();
+            showEmptyAudio();
+        }
+
         listAudioAdapter = new ListAudioAdapter(getContext(), list);
         listAudio.setAdapter(listAudioAdapter);
     }
@@ -119,8 +127,12 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
     private void loadListText(){
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
-        if(list.size() > 0)
+        if(list.size() > 0){
             hideEmptyText();
+        }else{
+            list = new ArrayList<>();
+            showEmptyText();
+        }
 
         listTextAdapter = new ListTextAdapter(getContext(), list);
         listText.setAdapter(listTextAdapter);
@@ -187,10 +199,10 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
             if (!outputFilename.isEmpty()){
                 Audio audio = Global.saveAudioNote(note, outputFilename);
                 if(audio != null){
-                    hideEmptyAudio();
-                    Global.showMessage("Audio note added");
                     listAudioAdapter.add(audio);
-                    Global.showListAudio(note);
+                    if(listAudioAdapter.getCount() > 0)
+                        hideEmptyAudio();
+                    Utils.setListViewHeightBasedOnChildren(listAudio);
                 }
             }
         }
@@ -207,11 +219,11 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         if(text.length() > 0){
             Message message = Global.saveTextNote(note, text);
             if(message != null){
-                hideEmptyText();
-                Global.showMessage("Text note added");
                 listTextAdapter.add(message);
                 listTextAdapter.notifyDataSetChanged();
-                Global.showListText(note);
+                if(listTextAdapter.getCount() > 0)
+                    hideEmptyText();
+                Utils.setListViewHeightBasedOnChildren(listText);
             }
         }
     }

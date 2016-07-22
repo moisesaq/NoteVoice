@@ -17,4 +17,11 @@
         android:title="@string/action_settings"
         app:showAsAction="never"
         android:visible="false"/>
+
+    <item
+        android:id="@+id/action_test_db"
+        android:orderInCategory="99"
+        android:title="Test DB"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@android:drawable/ic_menu_help"/>
 </menu>

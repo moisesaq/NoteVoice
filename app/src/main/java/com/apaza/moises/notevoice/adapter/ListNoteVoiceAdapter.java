@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.apaza.moises.notevoice.R;
@@ -73,11 +74,10 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
         }
 
         if(note.getNoteMessage().size() > 0){
-            holder.textNote.setVisibility(View.VISIBLE);
+            holder.layoutTextNote.setVisibility(View.VISIBLE);
             holder.textNote.setTextNote(note.getNoteMessage().get(0).getTextMessage());
         } else{
-            holder.titleTextNote.setVisibility(View.GONE);
-            holder.textNote.setVisibility(View.GONE);
+            holder.layoutTextNote.setVisibility(View.GONE);
         }
 
         holder.date.setText(Utils.getTimeCustom(note.getCreateAt()));
@@ -111,7 +111,7 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public AudioPlayView audioPlay;
-        public TextView titleTextNote;
+        public LinearLayout layoutTextNote;
         public TextNoteView textNote;
         public TextView date;
         public ImageButton delete, edit;
@@ -119,7 +119,7 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
         public ViewHolder(View view){
             super(view);
             audioPlay = (AudioPlayView)view.findViewById(R.id.audioPlay);
-            titleTextNote = (TextView)view.findViewById(R.id.titleTextNote);
+            layoutTextNote = (LinearLayout)view.findViewById(R.id.layoutTextNote);
             textNote = (TextNoteView) view.findViewById(R.id.textNote);
             date = (TextView)view.findViewById(R.id.date);
             delete = (ImageButton)view.findViewById(R.id.delete);

@@ -24,13 +24,13 @@
             android:layout_height="wrap_content"/>
 
         <LinearLayout
+            android:id="@+id/layoutTextNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/paddingMinGlobal">
 
             <TextView
-                android:id="@+id/titleTextNote"
                 style="@style/TextViewMoisesSmall"
                 android:text="Text Note"
                 android:textStyle="bold"/>
@@ -45,7 +45,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/paddingMinGlobal">
+            android:padding="@dimen/paddingMinGlobal"
+            android:background="@color/grayLight">
 
             <TextView
                 android:id="@+id/date"

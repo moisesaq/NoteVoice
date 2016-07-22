@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -89,6 +90,34 @@ public class Global {
         return null;
     }
 
+    public static boolean deleteNote(Note note){
+        if(note == null)
+            return false;
+        try {
+            DaoSession daoSession = Global.getHandlerDB().getDaoSession();
+            List<Audio> listAudio = note.getNoteAudio();
+            if(listAudio != null && listAudio.size() > 0){
+                for (Audio audio: listAudio){
+                    daoSession.getAudioDao().delete(audio);
+                    if(!audio.getRoute().isEmpty())
+                        Global.getMedia().eraseAudioFromDisk(audio.getRoute());
+                }
+            }
+
+            List<Message> listMessages = note.getNoteMessage();
+            if(listMessages != null && listMessages.size() > 0){
+                for (Message message: listMessages){
+                    daoSession.getMessageDao().delete(message);
+                }
+            }
+            daoSession.getNoteDao().delete(note);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static Audio saveAudioNote(Note note, String outputFileName){
         if(note == null || outputFileName == null)
             return null;
@@ -139,8 +168,10 @@ public class Global {
     /*THIS METHODS IS FOR TEST*/
     public static void showListNote(){
         List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
+        Log.d("DATA", "****************************DATA BASE LOCAL***********************************");
         for (Note note: list){
-            Log.d("DATA BASE", "Note: " + note.getCreateAt() + " - " + note.getCode());
+            Log.d("DATA", "****************************************************************************");
+            Log.d("DATA BASE", "Note: ID:" + note.getId() + " Created: " + note.getCreateAt());
             showListText(note);
             showListAudio(note);
         }
@@ -149,14 +180,17 @@ public class Global {
     public static void showListAudio(Note note){
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
         for (Audio audio: list){
-            Log.d("DATA BASE", "AUDIO >>> File: " + audio.getRoute() + " Created: " + audio.getCreateAt() + "\n");
+            Log.d("DATA", "--------------------------------------------------------------------------------");
+            Log.d("DATA BASE", "AUDIO >>> Code:" + audio.getCode() + "File: " + audio.getRoute() + " Created: " + audio.getCreateAt() + " Code note: "+ audio.getIdNote() +"\n");
+
         }
     }
 
     public static void showListText(Note note){
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
         for (Message message: list){
-            Log.d("DATA BASE", "MESSAGE >>> Text: " +  message.getTextMessage() + " Created: " + message.getCreateAt() + "\n");
+            Log.d("DATA", "---------------------------------------------------------------------------------");
+            Log.d("DATA BASE", "MESSAGE >>> Code: " + message.getCode() + "Text: " +  message.getTextMessage() + " Created: " + message.getCreateAt() + " Code note: "+ message.getIdNote() + "\n");
         }
     }
 
