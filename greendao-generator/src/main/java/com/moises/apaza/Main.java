@@ -59,7 +59,7 @@ public class Main {
     }
 
     public static void main(String[] args){
-        Schema schema = new Schema(2, "com.apaza.moises.notevoice.database");
+        Schema schema = new Schema(1, "com.apaza.moises.notevoice.database");
 
         /*-------------------TABLE ALARM--------------*/
         Entity alarm = schema.addEntity(ALARM);

@@ -31,8 +31,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.apaza.moises.notevoice.R;
-import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Note;
+import com.apaza.moises.notevoice.fragment.dialog.DateDialog;
+import com.apaza.moises.notevoice.fragment.dialog.TimeDialog;
 import com.apaza.moises.notevoice.global.AlarmReceiver;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.global.Utils;

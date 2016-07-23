@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.apaza.moises.notevoice.R;
 import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.global.Utils;
@@ -75,7 +76,8 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
 
         if(note.getNoteMessage().size() > 0){
             holder.layoutTextNote.setVisibility(View.VISIBLE);
-            holder.textNote.setTextNote(note.getNoteMessage().get(0).getTextMessage());
+            List<Message> listMessage = Utils.listMessageSorded(note.getNoteMessage(), Utils.ORDER_DESC);
+            holder.textNote.setTextNote(listMessage.get(0).getTextMessage() + " Total: " + listMessage.size());
         } else{
             holder.layoutTextNote.setVisibility(View.GONE);
         }
@@ -94,8 +96,10 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
         notifyDataSetChanged();
     }
 
-    public void addItem(int position, Note note){
-        listNote.add(position, note);
+    public void swap(List<Note> listData){
+        listNote.clear();
+        listNote.addAll(listData);
+        sortDesc();
         notifyDataSetChanged();
     }
 

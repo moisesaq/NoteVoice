@@ -74,6 +74,7 @@ public class Global {
         }
     }
 
+
     public static Note saveNewNote(){
         DaoSession daoSession = Global.getHandlerDB().getDaoSession();
         Note note = new Note();
@@ -170,17 +171,16 @@ public class Global {
         List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
         Log.d("DATA", "****************************DATA BASE LOCAL***********************************");
         for (Note note: list){
-            Log.d("DATA", "****************************************************************************");
             Log.d("DATA BASE", "Note: ID:" + note.getId() + " Created: " + note.getCreateAt());
             showListText(note);
             showListAudio(note);
+            Log.d("DATA", "--------------------------------------------------------------------------------");
         }
     }
 
     public static void showListAudio(Note note){
         List<Audio> list = Global.getHandlerDB().getDaoSession().getAudioDao()._queryNote_NoteAudio(note.getId());
         for (Audio audio: list){
-            Log.d("DATA", "--------------------------------------------------------------------------------");
             Log.d("DATA BASE", "AUDIO >>> Code:" + audio.getCode() + "File: " + audio.getRoute() + " Created: " + audio.getCreateAt() + " Code note: "+ audio.getIdNote() +"\n");
 
         }
@@ -189,7 +189,6 @@ public class Global {
     public static void showListText(Note note){
         List<Message> list = Global.getHandlerDB().getDaoSession().getMessageDao()._queryNote_NoteMessage(note.getId());
         for (Message message: list){
-            Log.d("DATA", "---------------------------------------------------------------------------------");
             Log.d("DATA BASE", "MESSAGE >>> Code: " + message.getCode() + "Text: " +  message.getTextMessage() + " Created: " + message.getCreateAt() + " Code note: "+ message.getIdNote() + "\n");
         }
     }

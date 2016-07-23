@@ -10,11 +10,17 @@ import android.widget.ListView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.apaza.moises.notevoice.R;
+import com.apaza.moises.notevoice.database.Audio;
+import com.apaza.moises.notevoice.database.Message;
+import com.apaza.moises.notevoice.database.Note;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Utils {
@@ -32,6 +38,10 @@ public class Utils {
     public static final String DATE_FORMAT_CLASSIC = "EEEE, dd/MM/yyyy";
     public static final String DATE_FORMAT_TIME = "HH:mm:ss";
     public static final String DATE_FORMAT_TIME_12 = "hh:mm a";
+
+    //SORT LIST
+    public static int ORDER_ASC = 1;
+    public static int ORDER_DESC = 2;
 
     public static String getTimeCustom(Date date){
         String result;
@@ -95,7 +105,6 @@ public class Utils {
         return 0;
     }
 
-
     public static String getCurrentDateString(){
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_INPUT_FULL, Locale.getDefault());
         return formatter.format(new Date());
@@ -149,5 +158,38 @@ public class Utils {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+    }
+
+    public static List<Audio> listAudioSorded(List<Audio> list, final int order){
+        Comparator<? super Audio> comparator = null;
+        comparator = new Comparator<Audio>() {
+            @Override
+            public int compare(Audio lhs, Audio rhs) {
+                if(order == Utils.ORDER_ASC)
+                    return lhs.getCreateAt().compareTo(rhs.getCreateAt());
+                else if(order == Utils.ORDER_DESC)
+                    return rhs.getCreateAt().compareTo(lhs.getCreateAt());
+                else
+                    return 0;
+            }
+        };
+        Collections.sort(list, comparator);
+        return list;
+    }
+
+    public static List<Message> listMessageSorded(List<Message> list, final int order){
+        Comparator<? super Message> comparator = null;
+        comparator = new Comparator<Message>() {
+            @Override
+            public int compare(Message lhs, Message rhs) {
+                if(order == Utils.ORDER_ASC)
+                    return lhs.getCreateAt().compareTo(rhs.getCreateAt());
+                else if(order == Utils.ORDER_DESC)
+                    return rhs.getCreateAt().compareTo(lhs.getCreateAt());
+                return 0;
+            }
+        };
+        Collections.sort(list, comparator);
+        return list;
     }
 }

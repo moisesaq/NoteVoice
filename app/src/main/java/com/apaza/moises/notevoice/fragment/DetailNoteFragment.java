@@ -18,6 +18,7 @@ import com.apaza.moises.notevoice.base.BaseFragment;
 import com.apaza.moises.notevoice.database.Audio;
 import com.apaza.moises.notevoice.database.Message;
 import com.apaza.moises.notevoice.database.Note;
+import com.apaza.moises.notevoice.fragment.dialog.NewTextNoteDialog;
 import com.apaza.moises.notevoice.global.Global;
 import com.apaza.moises.notevoice.global.Utils;
 import com.apaza.moises.notevoice.model.Media;
@@ -33,7 +34,6 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     public static final String TAG = "DETAIL_NOTE_FRAGMENT";
     public static final String ID_NOTE = "idNote";
 
-    private long idNote;
     private Note note;
     private View view;
 
@@ -44,11 +44,8 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     private ListView listAudio;
     private ListAudioAdapter listAudioAdapter;
     private TextView emptyAudio;
-    private RecordButton recordButton;
 
     private FloatingActionMenu fam;
-    private FloatingActionButton fabActionNewText;
-    private FloatingActionButton fabActionNewImage;
 
     private String outputFilename;
 
@@ -69,7 +66,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (getArguments() != null) {
-            idNote = getArguments().getLong(ID_NOTE);
+            long idNote = getArguments().getLong(ID_NOTE);
             note = Global.getHandlerDB().getDaoSession().getNoteDao().load(idNote);
         }
     }
@@ -85,7 +82,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
     private void setupView(){
         listAudio = (ListView)view.findViewById(R.id.listAudio);
         emptyAudio = (TextView) view.findViewById(R.id.emptyAudio);
-        recordButton = (RecordButton) view.findViewById(R.id.recordAudio);
+        RecordButton recordButton = (RecordButton) view.findViewById(R.id.recordAudio);
         recordButton.setOnRecordButtonListener(this);
         loadListAudio();
 
@@ -96,9 +93,9 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
         Global.showListText(note);
         Global.showListAudio(note);
         fam = (FloatingActionMenu)view.findViewById(R.id.actionMenu);
-        fabActionNewText = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewText);
+        FloatingActionButton fabActionNewText = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewText);
         fabActionNewText.setOnClickListener(this);
-        fabActionNewImage = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewImage);
+        FloatingActionButton fabActionNewImage = (com.github.clans.fab.FloatingActionButton)view.findViewById(R.id.actionNewImage);
         fabActionNewImage.setOnClickListener(this);
     }
 
@@ -113,6 +110,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
         listAudioAdapter = new ListAudioAdapter(getContext(), list);
         listAudio.setAdapter(listAudioAdapter);
+        //Utils.setListViewHeightBasedOnChildren(listAudio);
     }
 
     private void showEmptyAudio(){
@@ -136,6 +134,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
         listTextAdapter = new ListTextAdapter(getContext(), list);
         listText.setAdapter(listTextAdapter);
+        Utils.setListViewHeightBasedOnChildren(listText);
     }
 
     private void showEmptyText(){

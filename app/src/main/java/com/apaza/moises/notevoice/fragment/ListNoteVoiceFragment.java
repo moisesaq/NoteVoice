@@ -41,7 +41,6 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
     private ListNoteVoiceAdapter adapter;
 
     private TextView empty;
-    private RecordButton recordAudio;
     private EditText textNote;
     private ImageButton saveTextNote, selectImage;
 
@@ -80,20 +79,19 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
         empty = (TextView)view.findViewById(R.id.empty);
 
         listNoteVoice = (RecyclerView)view.findViewById(R.id.listNoteVoice);
-        //loadNotes();
+        loadNotes();
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        loadNotes();
+        //refreshList();
         if(actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(false);
     }
 
     private void loadNotes(){
         List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
-        Global.showListNote();
 
         if(list.size() > 0){
             hideEmpty();
@@ -104,10 +102,16 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         listNoteVoice.setLayoutManager(linearLayoutManager);
+        Global.showListNote();
         adapter = new ListNoteVoiceAdapter(list);
         adapter.sortDesc();
         adapter.setOnNoteVoiceListAdapterListener(this);
         listNoteVoice.setAdapter(adapter);
+    }
+
+    private void refreshList(){
+        List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
+        adapter.swap(list);
     }
 
     public void hideEmpty(){
@@ -212,8 +216,7 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
         if (context instanceof OnNoteVoiceListFragmentListener) {
             listener = (OnNoteVoiceListFragmentListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnNoteVoiceListFragmentListener");
+            throw new RuntimeException(context.toString() + " must implement OnNoteVoiceListFragmentListener");
         }
     }
 
@@ -271,7 +274,7 @@ public class ListNoteVoiceFragment extends BaseFragment implements RecordButton.
         }
 
         public void setupRecordButton(){
-            recordAudio = (RecordButton) pageAudio.findViewById(R.id.recordAudio);
+            RecordButton recordAudio = (RecordButton) pageAudio.findViewById(R.id.recordAudio);
             recordAudio.setOnRecordButtonListener(ListNoteVoiceFragment.this);
         }
 

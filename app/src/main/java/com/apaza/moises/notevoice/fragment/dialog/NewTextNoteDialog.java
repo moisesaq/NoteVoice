@@ -1,4 +1,4 @@
-package com.apaza.moises.notevoice.fragment;
+package com.apaza.moises.notevoice.fragment.dialog;
 
 
 import android.app.Dialog;
