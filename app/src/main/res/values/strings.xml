@@ -16,4 +16,6 @@
     <string name="your_text_notes">Your text notes</string>
     <string name="your_audio_notes">Your voice notes</string>
     <string name="your_image_notes">Your image notes</string>
+    <string name="description">Description</string>
+    <string name="ok">OK</string>
 </resources>

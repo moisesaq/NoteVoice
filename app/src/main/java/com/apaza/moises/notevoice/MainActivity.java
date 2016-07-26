@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.apaza.moises.notevoice.database.Note;
+import com.apaza.moises.notevoice.database.NoteContentProvider;
 import com.apaza.moises.notevoice.fragment.DetailNote;
 import com.apaza.moises.notevoice.fragment.DetailNoteFragment;
 import com.apaza.moises.notevoice.fragment.ListNoteFragment;
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
         setSupportActionBar(toolbar);
     }
 
-    private void showFragment(Fragment fragment){
+    public void showFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements ListNoteFragment.
 
         switch (id){
             case R.id.action_test_db:
-                Global.showListNote();
+                Global.showDataBaseCollections(NoteContentProvider.CONTENT_URI);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -3,6 +3,7 @@ package com.apaza.moises.notevoice.adapter;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,6 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
     private AudioPlayView lastAudioPlayView;
 
     private int startTime = 0;
-    private int finalTime = 0;
     private Handler handler = new Handler();
 
     private Comparator<? super Note> comparator;
@@ -60,13 +60,14 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_voice_item, parent, false);
-        return new ViewHolder(view);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_voice_item, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Note note = listNote.get(position);
+        Note note = this.listNote.get(position);
+        Global.showListNote(listNote);
         if(note.getNoteAudio().size() > 0){
             holder.audioPlay.setVisibility(View.VISIBLE);
             prepareAudio(holder.audioPlay, note.getNoteAudio().get(0));
@@ -74,11 +75,12 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
             holder.audioPlay.setVisibility(View.GONE);
         }
 
-        if(note.getNoteMessage().size() > 0){
+        List<Message> listMessage = note.getNoteMessage();
+        if(listMessage.size() > 0){
             holder.layoutTextNote.setVisibility(View.VISIBLE);
-            List<Message> listMessage = Utils.listMessageSorded(note.getNoteMessage(), Utils.ORDER_DESC);
+            Global.showListText(note);
             holder.textNote.setTextNote(listMessage.get(0).getTextMessage() + " Total: " + listMessage.size());
-        } else{
+        } else {
             holder.layoutTextNote.setVisibility(View.GONE);
         }
 
@@ -194,7 +196,7 @@ public class ListNoteVoiceAdapter extends RecyclerView.Adapter<ListNoteVoiceAdap
             Global.getMedia().setupAudio(pathAudio);
             this.lastAudioPlayView = audioPlayView;
 
-            finalTime = Global.getMedia().getAudioMaxDuration();
+            int finalTime = Global.getMedia().getAudioMaxDuration();
             startTime = Global.getMedia().getAudioCurrentPosition();
             this.lastAudioPlayView.getProgress().setMax(finalTime);
             this.lastAudioPlayView.getProgress().setProgress(startTime);

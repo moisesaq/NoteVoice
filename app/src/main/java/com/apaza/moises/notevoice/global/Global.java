@@ -2,6 +2,7 @@ package com.apaza.moises.notevoice.global;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.DatabaseUtils;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -167,8 +168,7 @@ public class Global {
     }
 
     /*THIS METHODS IS FOR TEST*/
-    public static void showListNote(){
-        List<Note> list = Global.getHandlerDB().getDaoSession().getNoteDao().queryBuilder().list();
+    public static void showListNote(List<Note> list){
         Log.d("DATA", "****************************DATA BASE LOCAL***********************************");
         for (Note note: list){
             Log.d("DATA BASE", "Note: ID:" + note.getId() + " Created: " + note.getCreateAt());
@@ -192,5 +192,11 @@ public class Global {
             Log.d("DATA BASE", "MESSAGE >>> Code: " + message.getCode() + "Text: " +  message.getTextMessage() + " Created: " + message.getCreateAt() + " Code note: "+ message.getIdNote() + "\n");
         }
     }
+
+    public static void showDataBaseCollections(Uri uri){
+        Log.d("SHOW", "---------------------COLLECTIONS DATA BASE----------------");
+        DatabaseUtils.dumpCursor(context.getContentResolver().query(uri, null, null, null, null));
+    }
+
 
 }

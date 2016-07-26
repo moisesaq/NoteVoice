@@ -18,5 +18,5 @@
         style="@style/TextViewMoisesMedium"
         android:text="This is a text note, write more text here please"
         android:textStyle="normal"
-        android:textColor="@color/grayMoises"/>
+        android:textColor="@android:color/black"/>
 </LinearLayout>

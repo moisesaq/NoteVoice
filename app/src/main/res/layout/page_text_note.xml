@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Write here your note"
+            android:inputType="textAutoComplete"
             android:singleLine="false"
             android:lines="2"
             android:textColor="@android:color/white"

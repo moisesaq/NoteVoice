@@ -32,8 +32,8 @@ public class HandlerDB {
     }
 
     public DaoSession getDaoSession(){
-        if (daoSession == null)
-            daoSession = daoMaster.newSession();
+        //if (daoSession == null)
+        daoSession = daoMaster.newSession();
         return daoSession;
     }
 }

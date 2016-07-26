@@ -59,7 +59,7 @@ public class Main {
     }
 
     public static void main(String[] args){
-        Schema schema = new Schema(1, "com.apaza.moises.notevoice.database");
+        Schema schema = new Schema(4, "com.apaza.moises.notevoice.database");
 
         /*-------------------TABLE ALARM--------------*/
         Entity alarm = schema.addEntity(ALARM);
@@ -68,6 +68,7 @@ public class Main {
         alarm.addDateProperty(ColumnsAlarm.ALARM_DATE);
         alarm.addStringProperty(ColumnsAlarm.REASON);
         alarm.addBooleanProperty(ColumnsAlarm.STATUS);
+        alarm.addContentProvider();
 
         /*-------------------TABLE NOTE--------------*/
         Entity note = schema.addEntity(NOTE);
@@ -76,6 +77,7 @@ public class Main {
         note.addStringProperty(ColumnsNote.COLOR);
         note.addDateProperty(ColumnsNote.CREATE_AT);
         note.addDateProperty(ColumnsNote.UPDATE_AT);
+        note.addContentProvider();
 
         Property idAlarm = note.addLongProperty(ColumnsNote.ID_ALARM).getProperty();
         note.addToOne(alarm, idAlarm); //A note have a alarm
@@ -90,6 +92,7 @@ public class Main {
 
         Property idNoteImage = image.addLongProperty(ColumnsImage.ID_NOTE).getProperty();
         image.addToOne(note, idNoteImage);
+        image.addContentProvider();
 
         ToMany noteToImage = note.addToMany(image, idNoteImage);
         noteToImage.setName(NOTE_IMAGE);
@@ -105,12 +108,13 @@ public class Main {
 
         Property idNoteAudio = audio.addLongProperty(ColumnsAudio.ID_NOTE).getProperty();
         audio.addToOne(audio, idNoteAudio);
+        audio.addContentProvider();
 
         ToMany noteToAudio = note.addToMany(audio, idNoteAudio);
         noteToAudio.setName(NOTE_AUDIO);
         noteToAudio.orderDesc(createAtAudio);
 
-        /*-------------------TABLE AUDIO--------------*/
+        /*-------------------TABLE MESSAGE--------------*/
         Entity message = schema.addEntity(MESSAGE);
         message.addIdProperty();
         message.addStringProperty(ColumnsMessage.CODE);
@@ -119,6 +123,7 @@ public class Main {
 
         Property idNoteMessage = message.addLongProperty(ColumnsMessage.ID_NOTE).getProperty();
         message.addToOne(message, idNoteMessage);
+        message.addContentProvider();
 
         ToMany noteToMessage = note.addToMany(message, idNoteMessage);
         noteToMessage.setName(NOTE_MESSAGE);

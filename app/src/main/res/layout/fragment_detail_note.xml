@@ -43,7 +43,7 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="wrap_content"
                         android:layout_margin="@dimen/marginMinGlobal">
 
                         <TextView
@@ -57,7 +57,9 @@
                             android:id="@+id/listText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="right|center_vertical"
+                            android:dividerHeight="0dp"
+                            android:divider="@null"
+                            android:layout_gravity="center"
                             android:visibility="visible"/>
                     </FrameLayout>
 

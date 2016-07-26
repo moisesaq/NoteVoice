@@ -110,7 +110,7 @@ public class DetailNoteFragment extends BaseFragment implements View.OnClickList
 
         listAudioAdapter = new ListAudioAdapter(getContext(), list);
         listAudio.setAdapter(listAudioAdapter);
-        //Utils.setListViewHeightBasedOnChildren(listAudio);
+        Utils.setListViewHeightBasedOnChildren(listAudio);
     }
 
     private void showEmptyAudio(){

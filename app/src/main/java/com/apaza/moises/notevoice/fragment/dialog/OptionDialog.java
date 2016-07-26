@@ -11,7 +11,7 @@ import android.support.v7.app.AlertDialog;
 import com.apaza.moises.notevoice.R;
 
 public class OptionDialog extends DialogFragment{
-
+    public static final String TAG = "OPTION_DIALOG";
     public static String DATA = "data";
 
     private String[] options = {"Image capture", "Select image"};
